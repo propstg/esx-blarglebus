@@ -1,6 +1,6 @@
 Locales['en'] = {
-    ['drive_to_first_marker'] = 'Get in bus and drive to first stop.',
-    ['drive_to_next_marker']  = 'Continue to next stop.',
+    ['drive_to_first_marker'] = 'Get in bus and drive to first stop at ~g~%s~.',
+    ['drive_to_next_marker']  = 'Continue to next stop at ~g~%s~.',
     ['wait_for_passengers']   = 'Wait for passengers to finish loading and unloading',
     ['return_to_terminal']    = 'Route is finished. Return to the terminal.',
 

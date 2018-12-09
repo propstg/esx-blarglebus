@@ -5,7 +5,7 @@ TriggerEvent('esx:getSharedObject', function(obj)
 end)
 
 RegisterNetEvent('blarglebus:finishRoute')
-AddEventHandler('blarglebus:finishRoute', function(source, amount)
+AddEventHandler('blarglebus:finishRoute', function(amount)
     local player = ESX.GetPlayerFromId(source)
     player.addMoney(amount)
 end)

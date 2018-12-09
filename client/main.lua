@@ -1,4 +1,5 @@
 local E_KEY = 38
+--local model = "s_f_y_hooker_01"
 
 local routeBlips = {}
 
@@ -25,7 +26,7 @@ Citizen.CreateThread(function ()
     initNotOnDutyMarkers()
 
     while true do
-        Citizen.Wait(100)
+        Citizen.Wait(30)
 
         playerPed = PlayerPedId()
         playerPosition = GetEntityCoords(playerPed)
@@ -85,8 +86,8 @@ end
 function startRoute(route)
     isOnDuty = true
     isRouteFinished = false
-    activeRoute = route
-    ESX.ShowNotification(_U('drive_to_first_marker'))
+    activeRoute = Config.Routes[route]
+    ESX.ShowNotification(_U('drive_to_first_marker', activeRoute.Stops[1].name))
     createBus()
 
     -- TODO charge player for bus rental
@@ -106,7 +107,7 @@ end
 
 function handleNormalStop()
     local currentStop = activeRoute.Stops[stopNumber]
-    if GetDistanceBetweenCoords(playerPosition, currentStop.x, currentStop.y, currentStop.z, true) < 5 then
+    if GetDistanceBetweenCoords(playerPosition, currentStop.x, currentStop.y, currentStop.z, true) < Config.Marker.Size then
         ESX.ShowNotification(_U('wait_for_passengers'))
         handleLoadingAndUnloading()
 
@@ -115,7 +116,7 @@ function handleNormalStop()
             ESX.ShowNotification(_U('return_to_terminal'))
             setBlipAndWaypoint(activeRoute.SpawnPoint.x, activeRoute.SpawnPoint.y, activeRoute.SpawnPoint.z)
         else
-            ESX.ShowNotification(_U('drive_to_next_marker'))
+            ESX.ShowNotification(_U('drive_to_next_marker', activeRoute.Stops[stopNumber + 1].name))
             setUpNextStop()
             stopNumber = stopNumber + 1
         end
@@ -123,22 +124,34 @@ function handleNormalStop()
 end
 
 function handleLoadingAndUnloading()
-    for i = 0, 7 do
-        SetVehicleDoorOpen(bus, i, true, false)
+    while not IsVehicleStopped(bus) do
+	ESX.ShowNotification(_U('wait_for_passengers'))
+	Citizen.Wait(500)
     end
 
+    for i = 2, 3 do
+        SetVehicleDoorOpen(bus, i, false, false)
+    end
+
+    Citizen.Wait(3000)
+
     for i = 1, #pedsOnBus do
-        TaskLeaveVehicle(pedsOnBus[i], bus, 256)
+	ClearPedTasksImmediately(pedsOnBus[i], true)
+        TaskLeaveVehicle(pedsOnBus[i], bus, 64)
     end
 
     waitUntilPedsOffBus()
     pedsOnBus = {}
     
+    Citizen.Wait(3000)
+
     for i = 1, #pedsAtNextStop do
+        FreezeEntityPosition(pedsAtNextStop[i], false)
+	Citizen.Wait(10)
         TaskEnterVehicle(pedsAtNextStop[i], 
             bus, 
-            10000,  -- timeout
-            0,      -- seat
+            5000,   -- timeout
+            i + 2,  -- seat
             1.0,    -- speed (walk)
             1,      -- flag, normal
             0       -- p6? lol
@@ -146,6 +159,7 @@ function handleLoadingAndUnloading()
     end
 
     waitUntilPedsOnBus()
+    pedsOnBus = pedsAtNextStop
     pedsAtNextStop = {}
 
     SetVehicleDoorsShut(bus, false)
@@ -156,34 +170,47 @@ function waitUntilPedsOffBus()
         return
     end
 
-    let allOff = false
-    while not allOff do
+    local onCount = 0
+    while onCount < #pedsOnBus do
+        onCount = 0
         for i = 1, #pedsOnBus do
-            allOff = allOff and not IsPedInAnyVehicle(pedsOnBus[i], false)
+            if GetVehiclePedIsIn(pedsOnBus[i], false) or IsPedDeadOrDying(pedsAtNextStop[i], 1) then
+		    onCount = onCount + 1
+	    end
+	    Citizen.Wait(200)
         end
     end
 end
 
 function waitUntilPedsOnBus()
+    local stop = activeRoute.Stops[stopNumber]
+
     if #pedsAtNextStop == 0 then
         return
     end
 
-    let allOn = false
-    while not allOn do
+    local onCount = 0
+    while onCount < #pedsAtNextStop do
+	onCount = 0
         for i = 1, #pedsAtNextStop do
-            allOn = allOn and IsPedInAnyVehicle(pedsAtNextStop[i], false)
+	    local pedPosition  = GetEntityCoords(pedsAtNextStop[i])
+	    local distance = GetDistanceBetweenCoords(pedPosition, stop.x, stop.y, stop.z)
+            if IsPedInAnyVehicle(pedsAtNextStop[i], false) or IsPedDeadOrDying(pedsAtNextStop[i], 1) or distance > 15 then
+		    onCount = onCount + 1
+	    end
+	    Citizen.Wait(100)
         end
     end
 end
 
 function handleReturningBus()
-    let coords = activeRoute.SpawnPoint
-    if GetDistanceBetweenCoords(playerPosition, coords.x, coords.y, coords.z, true) < 5 then
+    local coords = activeRoute.SpawnPoint
+    markerPositions = {coords}
+    if GetDistanceBetweenCoords(playerPosition, coords.x, coords.y, coords.z, true) < Config.Marker.Size then
         DeleteVehicle(bus)
         -- todo refund money
 
-        ESX.TriggerServerEvent('blarglebus:finishRoute', activeRoute.Payment)
+        TriggerServerEvent('blarglebus:finishRoute', activeRoute.Payment)
         isOnDuty = false
         activeRoute = nil
         bus = nil
@@ -191,9 +218,10 @@ function handleReturningBus()
 end
 
 function createBus()
-    let coords = activeRoute.SpawnPoint
-    ESX.Game.SpawnVehicle(activeRoute.BusModel, coords.x, coords.y, coords.z, coords.heading, function(createdBus)
+    local coords = activeRoute.SpawnPoint
+    ESX.Game.SpawnVehicle(activeRoute.BusModel, coords, coords.heading, function(createdBus)
         bus = createdBus
+	SetVehicleFuelLevel(bus, 100.0)
     end)
 end
 
@@ -202,8 +230,15 @@ function setUpNextStop()
 
     markerPositions = {nextStop}
 
-    for i = 1, math.random(activeRoute.Capacity) do
-        pedsAtNextStop = CreateRandomPed(nextStop.x, nextStop.y, nextStop.z)
+    if stopNumber + 1 < #activeRoute.Stops then
+	    for i = 1, math.random(activeRoute.Capacity) do
+		    local model = Config.PedModels[math.random(#Config.PedModels)]
+		    local ped = createPed(model, nextStop.x + math.random() * 5 - 2.5, nextStop.y + math.random() * 5 - 2.5, nextStop.z, math.random(365))
+		    FreezeEntityPosition(ped, true)
+		    table.insert(pedsAtNextStop, ped)
+	    end
+    else
+	    pedsAtNextStop = {}
     end
     
     setBlipAndWaypoint(nextStop.x, nextStop.y, nextStop.z)
@@ -218,3 +253,17 @@ function drawCircle(coords)
     local markerSize = Config.Marker.Size
     DrawMarker(1, coords.x, coords.y, coords.z, 0, 0, 0, 0, 0, 0, markerSize, markerSize, markerSize, 20, 200, 20, 100, 0, 0, 2, 0, 0, 0, 0)
 end
+
+function createPed(model, x, y, z, heading)
+    loadModel(model)
+    return CreatePed(4, model, x, y, z, heading, true, false)
+end
+
+function loadModel(model)
+    RequestModel(GetHashKey(model))
+    while not HasModelLoaded(GetHashKey(model)) do
+        RequestModel(GetHashKey(model))
+        Citizen.Wait(10)
+    end
+end
+
