@@ -1,6 +1,6 @@
 Config = {}
 Config.Locale = 'en'
-
+Config.EnterVehicleTimeout = 5000
 Config.Marker = {
     Size = 10.0
 }

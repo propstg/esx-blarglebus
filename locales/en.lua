@@ -4,10 +4,12 @@ Locales['en'] = {
     ['wait_for_passengers']   = 'Wait for passengers to finish loading and unloading',
     ['return_to_terminal']    = 'Route is finished. Return to the terminal.',
 
+    ['start_route']   = 'press ~INPUT_PICKUP~ to start ~g~%s~.',
+
     ['airport_route']         = 'Airport Shuttle',
-    ['start_airport_route']   = 'press ~INPUT_PICKUP~ to start airport route',
+    ['start_airport_route']   = 'press ~INPUT_PICKUP~ to start ~gairport route',
     ['intercity_route']       = 'Intercity Route',
-    ['start_intercity_route'] = 'press ~INPUT_PICKUP~ to start intercity route',
+    ['start_intercity_route'] = 'press ~INPUT_PICKUP~ to start ~gintercity route',
     ['vinewood_route']        = 'Vinewood Route',
-    ['start_vinewood_route']  = 'press ~INPUT_PICKUP~ to start Vinewood route',
+    ['start_vinewood_route']  = 'press ~INPUT_PICKUP~ to start ~gVinewood route',
 }
