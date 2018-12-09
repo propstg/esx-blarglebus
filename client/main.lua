@@ -125,8 +125,8 @@ end
 
 function handleLoadingAndUnloading()
     while not IsVehicleStopped(bus) do
-	ESX.ShowNotification(_U('wait_for_passengers'))
-	Citizen.Wait(500)
+        ESX.ShowNotification(_U('wait_for_passengers'))
+        Citizen.Wait(500)
     end
 
     for i = 2, 3 do
@@ -136,7 +136,7 @@ function handleLoadingAndUnloading()
     Citizen.Wait(3000)
 
     for i = 1, #pedsOnBus do
-	ClearPedTasksImmediately(pedsOnBus[i], true)
+        ClearPedTasksImmediately(pedsOnBus[i], true)
         TaskLeaveVehicle(pedsOnBus[i], bus, 64)
     end
 
@@ -147,7 +147,7 @@ function handleLoadingAndUnloading()
 
     for i = 1, #pedsAtNextStop do
         FreezeEntityPosition(pedsAtNextStop[i], false)
-	Citizen.Wait(10)
+        Citizen.Wait(10)
         TaskEnterVehicle(pedsAtNextStop[i], 
             bus, 
             5000,   -- timeout
@@ -175,9 +175,9 @@ function waitUntilPedsOffBus()
         onCount = 0
         for i = 1, #pedsOnBus do
             if GetVehiclePedIsIn(pedsOnBus[i], false) or IsPedDeadOrDying(pedsAtNextStop[i], 1) then
-		    onCount = onCount + 1
-	    end
-	    Citizen.Wait(200)
+                onCount = onCount + 1
+            end
+            Citizen.Wait(200)
         end
     end
 end
@@ -191,14 +191,14 @@ function waitUntilPedsOnBus()
 
     local onCount = 0
     while onCount < #pedsAtNextStop do
-	onCount = 0
+        onCount = 0
         for i = 1, #pedsAtNextStop do
-	    local pedPosition  = GetEntityCoords(pedsAtNextStop[i])
-	    local distance = GetDistanceBetweenCoords(pedPosition, stop.x, stop.y, stop.z)
+            local pedPosition  = GetEntityCoords(pedsAtNextStop[i])
+            local distance = GetDistanceBetweenCoords(pedPosition, stop.x, stop.y, stop.z)
             if IsPedInAnyVehicle(pedsAtNextStop[i], false) or IsPedDeadOrDying(pedsAtNextStop[i], 1) or distance > 15 then
-		    onCount = onCount + 1
-	    end
-	    Citizen.Wait(100)
+                onCount = onCount + 1
+            end
+            Citizen.Wait(100)
         end
     end
 end
@@ -221,7 +221,7 @@ function createBus()
     local coords = activeRoute.SpawnPoint
     ESX.Game.SpawnVehicle(activeRoute.BusModel, coords, coords.heading, function(createdBus)
         bus = createdBus
-	SetVehicleFuelLevel(bus, 100.0)
+        SetVehicleFuelLevel(bus, 100.0)
     end)
 end
 
@@ -231,14 +231,14 @@ function setUpNextStop()
     markerPositions = {nextStop}
 
     if stopNumber + 1 < #activeRoute.Stops then
-	    for i = 1, math.random(activeRoute.Capacity) do
-		    local model = Config.PedModels[math.random(#Config.PedModels)]
-		    local ped = createPed(model, nextStop.x + math.random() * 5 - 2.5, nextStop.y + math.random() * 5 - 2.5, nextStop.z, math.random(365))
-		    FreezeEntityPosition(ped, true)
-		    table.insert(pedsAtNextStop, ped)
-	    end
+        for i = 1, math.random(activeRoute.Capacity) do
+            local model = Config.PedModels[math.random(#Config.PedModels)]
+            local ped = createPed(model, nextStop.x + math.random() * 5 - 2.5, nextStop.y + math.random() * 5 - 2.5, nextStop.z, math.random(365))
+            FreezeEntityPosition(ped, true)
+            table.insert(pedsAtNextStop, ped)
+        end
     else
-	    pedsAtNextStop = {}
+        pedsAtNextStop = {}
     end
     
     setBlipAndWaypoint(nextStop.x, nextStop.y, nextStop.z)
