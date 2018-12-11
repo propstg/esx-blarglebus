@@ -6,7 +6,7 @@ Config.Marker = {
 }
 
 Config.UnloadType = {
-    All, Some, None
+    All = "all", Some = "some", None = "none"
 }
 
 AirportRoute = {
