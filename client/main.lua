@@ -89,6 +89,8 @@ function handleReturningBus()
         isOnDuty = false
         activeRoute = nil
         bus = nil
+
+        Markers.ResetMarkers()
     end
 end
 

@@ -6,7 +6,7 @@ Locales['en'] = {
     ['no_passengers_loading']               = 'Wait for passengers to finish unloading. No passengers loading at this stop',
     ['wait_for_passengers']                 = 'Wait for passengers to finish loading and unloading',
     ['return_to_terminal']                  = 'Route is finished. Return to the terminal.',
-    ['stop_bus']                            = 'Bring bus to a stop to return it and get paid.',
+    ['stop_bus']                            = 'Stop bus to return it and get paid.',
 
     ['start_route']                         = 'press ~INPUT_PICKUP~ to start ~g~%s~.',
 
