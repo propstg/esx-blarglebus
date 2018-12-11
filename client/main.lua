@@ -218,10 +218,13 @@ end
 function findFreeSeats()
     local freeSeats = {}
 
-    for i = activeRoute.FirstSeat, activeRoute.Capacity do
+    for i = activeRoute.FirstSeat, activeRoute.Capacity + 2 do
+        print ('seat ' .. i .. 'is...')
         if IsVehicleSeatFree(bus, i) then
-            print('seat ' .. i .. ' is free')
+            print('free')
             table.insert(freeSeats, i)
+        else
+            print('taken')
         end
     end
 

@@ -14,7 +14,7 @@ AirportRoute = {
     BusModel = 'rentalbus',
     Capacity = 6,
     Doors = {2, 3},
-    FirstSeat = 3,
+    FirstSeat = 1,
     SpawnPoint = {x = -923.7001, y = -2283.8886, z = 6.7090, heading = 333.65},
     Payment = 8000,
     Stops = {
