@@ -71,6 +71,26 @@ function handleActiveRoute()
     end
 end
 
+function handleReturningBus()
+    local coords = activeRoute.SpawnPoint
+
+    if GetDistanceBetweenCoords(playerPosition, coords.x, coords.y, coords.z, true) < Config.Marker.Size then
+	while not IsVehicleStopped(bus) do
+	    ESX.ShowNotification(_U('stop_bus'))
+	    Citizen.Wait(500)
+	end
+
+        DeleteVehicle(bus)
+
+        -- todo refund money
+
+        TriggerServerEvent('blarglebus:finishRoute', activeRoute.Payment)
+        isOnDuty = false
+        activeRoute = nil
+        bus = nil
+    end
+end
+
 function handleNormalStop()
     local currentStop = activeRoute.Stops[stopNumber]
     if GetDistanceBetweenCoords(playerPosition, currentStop.x, currentStop.y, currentStop.z, true) < Config.Marker.Size then
@@ -78,9 +98,11 @@ function handleNormalStop()
         handleLoadingAndUnloading()
 
         if (stopNumber == #activeRoute.Stops) then
+            local coords = activeRoute.SpawnPoint
             isRouteFinished = true
+            Markers.SetMarkers({coords})
             ESX.ShowNotification(_U('return_to_terminal'))
-            Blips.SetBlipAndWaypoint(activeRoute.Name, activeRoute.SpawnPoint.y, activeRoute.SpawnPoint.z)
+            Blips.SetBlipAndWaypoint(activeRoute.Name, coords.x, coords.y, coords.z)
         else
             ESX.ShowNotification(_U('drive_to_next_marker', activeRoute.Stops[stopNumber + 1].name))
             setUpNextStop()
@@ -111,7 +133,7 @@ function handleLoadingAndUnloading()
     Citizen.Wait(3000)
 
     for i = 1, #pedsAtNextStop do
-        Peds.EnterVehicle(pedsOnBus[i], bus, i+2)
+        Peds.EnterVehicle(pedsAtNextStop[i], bus, i + 2)
     end
 
     waitUntilPedsOnBus()
@@ -128,6 +150,7 @@ function waitUntilPedsOffBus()
         return
     end
 
+    local onCount = 0
     while onCount < #pedsOnBus do
         onCount = 0
         for i = 1, #pedsOnBus do
@@ -146,10 +169,11 @@ function waitUntilPedsOnBus()
         return
     end
 
+    local onCount = 0
     while onCount < #pedsAtNextStop do
         onCount = 0
         for i = 1, #pedsAtNextStop do
-            if Peds.IsPedInVehicleDeadOrTooFarAway(pedsOnBus[i], stop) then
+            if Peds.IsPedInVehicleDeadOrTooFarAway(pedsAtNextStop[i], stop) then
                 onCount = onCount + 1
             end
             Citizen.Wait(200)
@@ -160,7 +184,7 @@ end
 function setUpNextStop()
     local nextStop = activeRoute.Stops[stopNumber + 1]
 
-    Markers.SetPositions({nextStop})
+    Markers.SetMarkers({nextStop})
 
     if stopNumber + 1 < #activeRoute.Stops then
         for i = 1, math.random(activeRoute.Capacity) do
@@ -172,4 +196,12 @@ function setUpNextStop()
     end
     
     Blips.SetBlipAndWaypoint(activeRoute.Name, nextStop.x, nextStop.y, nextStop.z)
+end
+
+function createBus()
+    local coords = activeRoute.SpawnPoint
+    ESX.Game.SpawnVehicle(activeRoute.BusModel, coords, coords.heading, function(createdBus)
+        bus = createdBus
+        SetVehicleFuelLevel(bus, 100.0)
+    end)
 end

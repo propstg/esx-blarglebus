@@ -13,9 +13,10 @@ client_scripts {
     '@es_extended/locale.lua',
     'locales/en.lua',
     'config.lua',
-    'client/main.lua',
     'client/blips.lua',
-    'client/markers.lua'
+    'client/markers.lua',
+    'client/peds.lua',
+    'client/main.lua'
 }
 
 dependencies {
