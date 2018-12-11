@@ -189,7 +189,7 @@ function handleLoading()
 
     for i = 1, #pedsAtNextStop do
         Peds.EnterVehicle(pedsAtNextStop[i], bus, freeSeats[i])
-        pedsOnBus.insert(pedsAtNextStop[i])
+        table.insert(pedsOnBus, pedsAtNextStop[i])
     end
 
     waitUntilPedsOnBus()
