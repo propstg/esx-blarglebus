@@ -7,6 +7,7 @@ local stopNumber = 1
 local bus = nil
 local pedsOnBus = {}
 local pedsAtNextStop = {}
+local numberDepartingPedsNextStop = 0
 
 local playerPosition = nil
 local playerPed = nil
@@ -75,14 +76,14 @@ function handleReturningBus()
     local coords = activeRoute.SpawnPoint
 
     if GetDistanceBetweenCoords(playerPosition, coords.x, coords.y, coords.z, true) < Config.Marker.Size then
-    while not IsVehicleStopped(bus) do
-        ESX.ShowNotification(_U('stop_bus'))
-        Citizen.Wait(500)
-    end
+        while not IsVehicleStopped(bus) do
+            ESX.ShowNotification(_U('stop_bus'))
+            Citizen.Wait(500)
+        end
 
         DeleteVehicle(bus)
 
-        -- todo refund money
+        -- TODO refund money for bus rental
 
         TriggerServerEvent('blarglebus:finishRoute', activeRoute.Payment)
         isOnDuty = false
@@ -93,9 +94,10 @@ end
 
 function handleNormalStop()
     local currentStop = activeRoute.Stops[stopNumber]
+
     if GetDistanceBetweenCoords(playerPosition, currentStop.x, currentStop.y, currentStop.z, true) < Config.Marker.Size then
-        ESX.ShowNotification(_U('wait_for_passengers'))
-        handleLoadingAndUnloading()
+        handleUnloading()
+        handleLoading()
 
         if (stopNumber == #activeRoute.Stops) then
             local coords = activeRoute.SpawnPoint
@@ -111,55 +113,87 @@ function handleNormalStop()
     end
 end
 
-function handleLoadingAndUnloading()
-    while not IsVehicleStopped(bus) do
-        ESX.ShowNotification(_U('wait_for_passengers'))
-        Citizen.Wait(500)
+function handleUnloading()
+    displayWaitMessageUntilStopped()
+    openBusDoors()
+
+    local departingPeds = {}
+    for i = 1, numberDepartingPedsNextStop do
+        local ped = table.remove(pedsOnBus)
+        table.insert(departingPeds, ped)
+        Peds.LeaveVehicle(ped, bus)
     end
 
-    for i = 2, 3 do
-        SetVehicleDoorOpen(bus, i, false, false)
-    end
-
-    Citizen.Wait(3000)
-
-    for i = 1, #pedsOnBus do
-        Peds.LeaveVehicle(pedsOnBus[i], bus)
-    end
-
-    waitUntilPedsOffBus()
-    pedsOnBus = {}
-    
-    Citizen.Wait(3000)
-
-    for i = 1, #pedsAtNextStop do
-        Peds.EnterVehicle(pedsAtNextStop[i], bus, i + 2)
-    end
-
-    waitUntilPedsOnBus()
-    pedsOnBus = pedsAtNextStop
-    pedsAtNextStop = {}
-
-    SetVehicleDoorsShut(bus, false)
+    waitUntilPedsOffBus(departingPeds)
 end
 
-function waitUntilPedsOffBus()
+function displayWaitMessageUntilStopped()
+    local notificationMessage = determineWaitForPassengersMessage()
+
+    while not IsVehicleStopped(bus) do
+        ESX.ShowNotification(notificationMessage)
+        Citizen.Wait(500)
+    end
+end
+
+function determineWaitForPassengersMessage()
+    local notificationMessage = _U('wait_for_passengers')
+
+    if numberDepartingPedsNextStop == 0 and #pedsAtNextStop == 0 then
+        notificationMessage = _U('no_passengers_loading_or_unloading')
+    else if numberDepartingPedsNextStop == 0 then
+        notificationMessage = _U('no_passengers_unloading')
+    else if #pedsAtNextStop == 0 then
+        notificationMessage = _U('no_passengers_loading')
+    end
+
+    return notificationMessage
+end
+
+function openBusDoors()
+    for i = 1, #activeRoute.Doors do
+        SetVehicleDoorOpen(bus, activeRoute.Doors[i], false, false)
+    end
+
+    Citizen.Wait(3000)
+end
+
+function waitUntilPedsOffBus(departingPeds)
     local stop = activeRoute.Stops[stopNumber]
 
-    if #pedsOnBus == 0 then
+    if #departingPeds == 0 then
         return
     end
 
     local onCount = 0
-    while onCount < #pedsOnBus do
+    while onCount < #departingPeds do
         onCount = 0
-        for i = 1, #pedsOnBus do
-            if Peds.IsPedInVehicleOrDead(pedsOnBus[i], stop) then
+        for i = 1, #departingPeds do
+            if Peds.IsPedInVehicleOrDead(departingPeds[i], stop) then
                 onCount = onCount + 1
             end
             Citizen.Wait(200)
         end
     end
+end
+
+function handleLoading()
+    Citizen.Wait(3000)
+
+    if #pedsAtNextStop == 0 then
+        SetVehicleDoorsShut(bus, false)
+        return
+    end
+
+    local freeSeats = findFreeSeats()
+
+    for i = 1, #pedsAtNextStop do
+        Peds.EnterVehicle(pedsAtNextStop[i], bus, freeSeats[i])
+        pedsOnBus.insert(pedsAtNextStop[i])
+    end
+
+    waitUntilPedsOnBus()
+    SetVehicleDoorsShut(bus, false)
 end
 
 function waitUntilPedsOnBus()
@@ -181,22 +215,54 @@ function waitUntilPedsOnBus()
     end
 end
 
+function findFreeSeats()
+    local freeSeats = {}
+
+    for i = activeRoute.FirstSeat, activeRoute.Capacity do
+        if IsVehicleSeatFree(bus, i) then
+            print('seat ' .. i .. ' is free')
+            table.insert(freeSeats, i)
+        end
+    end
+
+    return freeSeats
+end
+
 function setUpNextStop()
     local nextStop = activeRoute.Stops[stopNumber + 1]
+    local numberOfPedsToSpawn = 0
+    local freeSeats = activeRoute.Capacity - #pedsOnBus
+    
+    numberDepartingPedsNextStop = 0
 
-    Markers.SetMarkers({nextStop})
+    if isLastStop(stopNumber + 1) then
+        numberDepartingPedsNextStop = #pedsOnBus
+    else if nextStop.unloadType == Config.UnloadType.All then
+        numberOfPedsToSpawn = activeRoute.Capacity
+        numberDepartingPedsNextStop = #pedsOnBus
+    else if nextStop.unloadType == Config.UnloadType.Some then
+        numberOfPedsToSpawn = math.random(1, activeRoute.Capacity)
 
-    if stopNumber + 1 < #activeRoute.Stops then
-        for i = 1, math.random(activeRoute.Capacity) do
-            local ped = Peds.CreateRandomPedInArea(nextStop.x, nextStop.y, nextStop.z)
-            table.insert(pedsAtNextStop, ped)
+        local minimumDepartingPeds = 1
+
+        if numberOfPedsToSpawn > freeSeats then
+            minimumDepartingPeds = numberOfPedsToSpawn - freeSeats
         end
-    else
-        pedsAtNextStop = {}
+
+        numberDepartingPedsNextStop = math.random(minimumDepartingPeds, #pedsOnBus)
+    else if nextStop.unloadType == Config.UnloadType.None and freeSeats > 0 then
+        numberOfPedsToSpawn = math.random(1, freeSeats)
+    end
+
+    for i = 1, numberOfPedsToSpawn do
+        table.insert(pedsAtNextStop, Peds.CreateRandomPedInArea(nextStop.x, nextStop.y, nextStop.z))
     end
     
+    Markers.SetMarkers({nextStop})
     Blips.SetBlipAndWaypoint(activeRoute.Name, nextStop.x, nextStop.y, nextStop.z)
 end
+
+function isLastStop(stopNumber) return stopNumber == #activeRoute.Stops end
 
 function createBus()
     local coords = activeRoute.SpawnPoint

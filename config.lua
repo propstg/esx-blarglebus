@@ -13,6 +13,8 @@ AirportRoute = {
     Name = 'airport_route',
     BusModel = 'rentalbus',
     Capacity = 6,
+    Doors = {2, 3},
+    FirstSeat = 3,
     SpawnPoint = {x = -923.7001, y = -2283.8886, z = 6.7090, heading = 333.65},
     Payment = 8000,
     Stops = {
@@ -33,6 +35,8 @@ IntercityRoute = {
     Name = 'intercity_route',
     BusModel = 'bus',
     Capacity = 15,
+    Doors = {1},
+    FirstSeat = 2,
     SpawnPoint = {x = 427.6807, y = -582.7913, z = 28.5165, heading = 135.64},
     Payment = 15000,
     Stops = {
@@ -54,6 +58,8 @@ VinewoodRoute = {
     Name = 'vinewood_route',
     BusModel = 'bus',
     Capacity = 15,
+    Doors = {1},
+    FirstSeat = 2,
     SpawnPoint = {x = 465.6447, y = -615.9630, z = 28.4993, heading = 174.2},
     Payment = 8000,
     Stops = {
