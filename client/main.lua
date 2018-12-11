@@ -141,9 +141,9 @@ function determineWaitForPassengersMessage()
 
     if numberDepartingPedsNextStop == 0 and #pedsAtNextStop == 0 then
         notificationMessage = _U('no_passengers_loading_or_unloading')
-    else if numberDepartingPedsNextStop == 0 then
+    elseif numberDepartingPedsNextStop == 0 then
         notificationMessage = _U('no_passengers_unloading')
-    else if #pedsAtNextStop == 0 then
+    elseif #pedsAtNextStop == 0 then
         notificationMessage = _U('no_passengers_loading')
     end
 
@@ -237,10 +237,10 @@ function setUpNextStop()
 
     if isLastStop(stopNumber + 1) then
         numberDepartingPedsNextStop = #pedsOnBus
-    else if nextStop.unloadType == Config.UnloadType.All then
+    elseif nextStop.unloadType == Config.UnloadType.All then
         numberOfPedsToSpawn = activeRoute.Capacity
         numberDepartingPedsNextStop = #pedsOnBus
-    else if nextStop.unloadType == Config.UnloadType.Some then
+    elseif nextStop.unloadType == Config.UnloadType.Some then
         numberOfPedsToSpawn = math.random(1, activeRoute.Capacity)
 
         local minimumDepartingPeds = 1
@@ -250,7 +250,7 @@ function setUpNextStop()
         end
 
         numberDepartingPedsNextStop = math.random(minimumDepartingPeds, #pedsOnBus)
-    else if nextStop.unloadType == Config.UnloadType.None and freeSeats > 0 then
+    elseif nextStop.unloadType == Config.UnloadType.None and freeSeats > 0 then
         numberOfPedsToSpawn = math.random(1, freeSeats)
     end
 
