@@ -219,13 +219,12 @@ function findFreeSeats()
     local freeSeats = {}
 
     for i = activeRoute.FirstSeat, activeRoute.Capacity + 2 do
-        print ('seat ' .. i .. 'is...')
+        local result = 'taken'
         if IsVehicleSeatFree(bus, i) then
-            print('free')
+            result = 'free'
             table.insert(freeSeats, i)
-        else
-            print('taken')
         end
+        print ('seat ' .. i .. ' is...' .. result)
     end
 
     return freeSeats
@@ -239,8 +238,10 @@ function setUpNextStop()
     numberDepartingPedsNextStop = 0
 
     if isLastStop(stopNumber + 1) then
+        print ('next stop is last, all peds should depart')
         numberDepartingPedsNextStop = #pedsOnBus
     elseif nextStop.unloadType == Config.UnloadType.All then
+        print ('next stop is All, all peds should unload, should spawn peds equal to capacity')
         numberOfPedsToSpawn = activeRoute.Capacity
         numberDepartingPedsNextStop = #pedsOnBus
     elseif nextStop.unloadType == Config.UnloadType.Some then
@@ -253,8 +254,11 @@ function setUpNextStop()
         end
 
         numberDepartingPedsNextStop = math.random(minimumDepartingPeds, #pedsOnBus)
+
+        print ('next stop is Some, randomly decided to spawn ' .. numberOfPedsToSpawn .. ' peds and depart ' .. numberDepartingPedsNextStop)
     elseif nextStop.unloadType == Config.UnloadType.None and freeSeats > 0 then
         numberOfPedsToSpawn = math.random(1, freeSeats)
+        print ('next stop is None, randomly deciding to spawn ' .. numberOfPedsToSpawn .. 'peds')
     end
 
     for i = 1, numberOfPedsToSpawn do
