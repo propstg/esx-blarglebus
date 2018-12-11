@@ -75,10 +75,10 @@ function handleReturningBus()
     local coords = activeRoute.SpawnPoint
 
     if GetDistanceBetweenCoords(playerPosition, coords.x, coords.y, coords.z, true) < Config.Marker.Size then
-	while not IsVehicleStopped(bus) do
-	    ESX.ShowNotification(_U('stop_bus'))
-	    Citizen.Wait(500)
-	end
+    while not IsVehicleStopped(bus) do
+        ESX.ShowNotification(_U('stop_bus'))
+        Citizen.Wait(500)
+    end
 
         DeleteVehicle(bus)
 
