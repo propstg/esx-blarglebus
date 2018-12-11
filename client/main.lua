@@ -125,6 +125,10 @@ function handleUnloading()
     end
 
     waitUntilPedsOffBus(departingPeds)
+
+    for i = 1, #departingPeds do
+        SetEntityAsNoLongerNeeded(departingPeds[i])
+    end
 end
 
 function displayWaitMessageUntilStopped()
