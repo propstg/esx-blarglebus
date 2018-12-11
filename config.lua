@@ -35,8 +35,8 @@ IntercityRoute = {
     Name = 'intercity_route',
     BusModel = 'bus',
     Capacity = 15,
-    Doors = {1},
-    FirstSeat = 2,
+    Doors = {1, 2},
+    FirstSeat = 1,
     SpawnPoint = {x = 427.6807, y = -582.7913, z = 28.5165, heading = 135.64},
     Payment = 15000,
     Stops = {
