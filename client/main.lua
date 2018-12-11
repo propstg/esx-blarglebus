@@ -235,6 +235,7 @@ function setUpNextStop()
     local numberOfPedsToSpawn = 0
     local freeSeats = activeRoute.Capacity - #pedsOnBus
     
+    pedsAtNextStop = {}
     numberDepartingPedsNextStop = 0
 
     if isLastStop(stopNumber + 1) then
