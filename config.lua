@@ -5,6 +5,10 @@ Config.Marker = {
     Size = 10.0
 }
 
+Config.UnloadType = {
+    All, Some, None
+}
+
 AirportRoute = {
     Name = 'airport_route',
     BusModel = 'rentalbus',
@@ -12,37 +16,40 @@ AirportRoute = {
     SpawnPoint = {x = -923.7001, y = -2283.8886, z = 6.7090, heading = 333.65},
     Payment = 8000,
     Stops = {
-        {x = -1664.8002, y = -538.1304, z = 35.2513, name = 'Banner Hotel & Spa'},
-        {x = -1860.3963, y = -350.8236, z = 49.6338, name = 'Von Crastenburg'},
-        {x = -1031.2937, y = -2729.3339, z = 13.7566, name = 'Airport'},
-        {x = -1304.3708, y = -407.5448, z = 35.5009, name = 'Elgin House'},
-        {x = -1333.0507, y = -1089.8925, z = 6.9793, name = 'Venetian'},
-        {x = -1031.2937, y = -2729.3339, z = 13.7566, name = 'Airport'},
-        {x = -824.8701, y = -1221.3138, z = 7.3654, name = 'The Viceroy'},
-        {x = -880.8395, y = -2110.7658, z = 9.0868, name = 'Crastenburg'},
-        {x = -695.0627, y = -2283.1557, z = 13.0476, name = 'Opium Nights Hotel'},
-        {x = -1031.2937, y = -2729.3339, z = 13.7566, name = 'Airport'},
+        {x = -1664.8002, y = -538.1304, z = 35.2513, name = 'Banner Hotel & Spa', unloadType = Config.UnloadType.None},
+        {x = -1860.3963, y = -350.8236, z = 49.6338, name = 'Von Crastenburg', unloadType = Config.UnloadType.None},
+        {x = -1031.2937, y = -2729.3339, z = 13.7566, name = 'Airport', unloadType = Config.UnloadType.All},
+        {x = -1304.3708, y = -407.5448, z = 35.5009, name = 'Elgin House', unloadType = Config.UnloadType.Some},
+        {x = -1333.0507, y = -1089.8925, z = 6.9793, name = 'Venetian', unloadType = Config.UnloadType.Some},
+        {x = -1031.2937, y = -2729.3339, z = 13.7566, name = 'Airport', unloadType = Config.UnloadType.All},
+        {x = -824.8701, y = -1221.3138, z = 7.3654, name = 'The Viceroy', unloadType = Config.UnloadType.Some},
+        {x = -880.8395, y = -2110.7658, z = 9.0868, name = 'Crastenburg', unloadType = Config.UnloadType.Some},
+        {x = -695.0627, y = -2283.1557, z = 13.0476, name = 'Opium Nights Hotel', unloadType = Config.UnloadType.Some},
+        {x = -1031.2937, y = -2729.3339, z = 13.7566, name = 'Airport', unloadType = Config.UnloadType.All},
     }
 }
 
 IntercityRoute = {
     Name = 'intercity_route',
-    BusModel = 'coach',
-    Capacity = 9,
+    BusModel = 'bus',
+    Capacity = 15,
     SpawnPoint = {x = 427.6807, y = -582.7913, z = 28.5165, heading = 135.64},
     Payment = 15000,
     Stops = {
-        {x = 424.7632, y = -638.9176, z = 28.5001, heading = 'Dashound Bus Center'},
-        {x = 2237.2424, y = 3190.7673, z = 48.7102, name = 'Senora National Park'},
-        {x = 2094.8310, y = 3566.1850, z = 41.8067, name = 'Senora National Park'},
-        {x = 1063.4536, y = 2675.3242, z = 39.3417, name = 'Near Harmony'},
-        {x = 1962.9892, y = 3710.2802, z = 32.2184, name = 'Sandy Shores'},
-        {x = 1660.6237, y = 4857.0190, z = 41.2123, name = 'Grapeseed'},
-        {x = -17.2458, y = 6500.5517, z = 31.5728, name = 'Paleto Bay'},
-        {x = -329.8910, y = 6185.0571, z = 31.6218, name = 'Paleto Bay'},
+        {x = 424.7632, y = -638.9176, z = 28.5001, heading = 'Dashound Bus Center', unloadType = Config.UnloadType.All},
+        -- TODO more western routes here
+        {x = -329.8910, y = 6185.0571, z = 31.6218, name = 'Paleto Bay', unloadType = Config.UnloadType.Some},
+        {x = -17.2458, y = 6500.5517, z = 31.5728, name = 'Paleto Bay', unloadType = Config.UnloadType.Some},
+        {x = 1660.6237, y = 4857.0190, z = 41.2123, name = 'Grapeseed', unloadType = Config.UnloadType.Some},
+        {x = 1962.9892, y = 3710.2802, z = 32.2184, name = 'Sandy Shores', unloadType = Config.UnloadType.Some},
+        {x = 1063.4536, y = 2675.3242, z = 39.3417, name = 'Near Harmony', unloadType = Config.UnloadType.Some},
+        {x = 2094.8310, y = 3566.1850, z = 41.8067, name = 'Senora National Park', unloadType = Config.UnloadType.Some},
+        {x = 2237.2424, y = 3190.7673, z = 48.7102, name = 'Senora National Park', unloadType = Config.UnloadType.Some},
+        {x = 424.7632, y = -638.9176, z = 28.5001, heading = 'Dashound Bus Center', unloadType = Config.UnloadType.All},
     }
 }
 
+--TODO Define stops for vinewood route
 VinewoodRoute = {
     Name = 'vinewood_route',
     BusModel = 'bus',
@@ -59,7 +66,7 @@ VinewoodRoute = {
 }
 
 Config.Routes = {
-    AirportRoute, IntercityRoute, VinewoodRoute
+    AirportRoute, IntercityRoute, -- TODO VinewoodRoute
 }
 
 Config.PedModels = {
