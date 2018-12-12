@@ -9,6 +9,9 @@ local pedsOnBus = {}
 local pedsAtNextStop = {}
 local numberDepartingPedsNextStop = 0
 
+local lastStopCoords = {}
+local pedsToDelete = {}
+
 local playerPosition = nil
 local playerPed = nil
 
@@ -37,11 +40,23 @@ Citizen.CreateThread(function ()
     end
 end)
 
+Citizen.CreateThread(function ()
+    while true do
+        if #pedsToDelete > 0 and (not isOnDuty or playerDistanceFromCoords(lastStopCoords) > Config.DeleteDistance) then
+            for _, ped in pairs(pedsToDelete) do
+                Peds.DeletePed(ped)
+            end
+        end
+
+        Citizen.Wait(5000)
+    end
+end)
+
 function handleSpawnPoint(locationIndex)
     local route = Config.Routes[locationIndex]
     local coords = route.SpawnPoint;
     
-    if GetDistanceBetweenCoords(playerPosition, coords.x, coords.y, coords.z, true) < Config.Marker.Size then
+    if playerDistanceFromCoords(coords) < Config.Marker.Size then
         ESX.ShowHelpNotification(_U('start_'..route.Name))
 
         if IsControlJustPressed(1, E_KEY) then
@@ -75,7 +90,7 @@ end
 function handleReturningBus()
     local coords = activeRoute.SpawnPoint
 
-    if GetDistanceBetweenCoords(playerPosition, coords.x, coords.y, coords.z, true) < Config.Marker.Size then
+    if playerDistanceFromCoords(coords) < Config.Marker.Size then
         while not IsVehicleStopped(bus) do
             ESX.ShowNotification(_U('stop_bus'))
             Citizen.Wait(500)
@@ -97,7 +112,7 @@ end
 function handleNormalStop()
     local currentStop = activeRoute.Stops[stopNumber]
 
-    if GetDistanceBetweenCoords(playerPosition, currentStop.x, currentStop.y, currentStop.z, true) < Config.Marker.Size then
+    if playerDistanceFromCoords(currentStop) < Config.Marker.Size then
         handleUnloading()
         handleLoading()
 
@@ -112,6 +127,8 @@ function handleNormalStop()
             setUpNextStop()
             stopNumber = stopNumber + 1
         end
+
+        lastStopCoords = currentStop
     end
 end
 
@@ -123,6 +140,7 @@ function handleUnloading()
     for i = 1, numberDepartingPedsNextStop do
         local ped = table.remove(pedsOnBus)
         table.insert(departingPeds, ped)
+        table.insert(pedsToDelete, ped)
         Peds.LeaveVehicle(ped, bus)
     end
 
@@ -285,4 +303,8 @@ function createBus()
         bus = createdBus
         SetVehicleFuelLevel(bus, 100.0)
     end)
+end
+
+function playerDistanceFromCoords(coords)
+    return GetDistanceBetweenCoords(playerPosition, coords.x, coords.y, coords.z, true)
 end

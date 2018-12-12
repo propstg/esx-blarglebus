@@ -1,6 +1,7 @@
 Config = {}
 Config.Locale = 'en'
 Config.EnterVehicleTimeout = 5000
+Config.DeleteDistance = 100.0
 Config.Marker = {
     Size = 10.0
 }

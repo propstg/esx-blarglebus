@@ -64,6 +64,10 @@ function loadModel(modelName)
     return modelName
 end
 
+function deletePed(ped)
+    DeletePed(ped)
+end
+
 function randomlySelectModel()
     return Config.PedModels[math.random(#Config.PedModels)]
 end
@@ -73,5 +77,6 @@ Peds = {
     LeaveVehicle = leaveVehicle,
     EnterVehicle = enterVehicle,
     IsPedInVehicleOrDead = isPedInVehicleOrDead,
-    IsPedInVehicleDeadOrTooFarAway = isPedInVehicleDeadOrTooFarAway
+    IsPedInVehicleDeadOrTooFarAway = isPedInVehicleDeadOrTooFarAway,
+    DeletePed = deletePed
 }
