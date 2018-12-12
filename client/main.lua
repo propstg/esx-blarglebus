@@ -43,8 +43,9 @@ end)
 Citizen.CreateThread(function ()
     while true do
         if #pedsToDelete > 0 and (not isOnDuty or playerDistanceFromCoords(lastStopCoords) > Config.DeleteDistance) then
-            for _, ped in pairs(pedsToDelete) do
-                Peds.DeletePed(ped)
+            while #pedsToDelete > 0 do
+                Peds.DeletePed(table.remove(pedsToDelete))
+                Citizen.Wait(10)
             end
         end
 
