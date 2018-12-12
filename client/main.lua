@@ -135,6 +135,8 @@ end
 
 function handleUnloading(stopCoords)
     displayWaitMessageUntilStopped()
+    SetVehicleIndicatorLights(bus, 0, true)
+    SetVehicleIndicatorLights(bus, 1, true)
     openBusDoors()
 
     local departingPeds = {}
@@ -220,6 +222,8 @@ function handleLoading()
 
     waitUntilPedsOnBus()
     SetVehicleDoorsShut(bus, false)
+    SetVehicleIndicatorLights(bus, 0, false)
+    SetVehicleIndicatorLights(bus, 1, false)
 end
 
 function waitUntilPedsOnBus()
