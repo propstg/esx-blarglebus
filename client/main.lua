@@ -25,8 +25,6 @@ Citizen.CreateThread(function ()
     end
 
     while true do
-        Citizen.Wait(30)
-
         playerPed = PlayerPedId()
         playerPosition = GetEntityCoords(playerPed)
 
@@ -34,8 +32,10 @@ Citizen.CreateThread(function ()
             for i = 1, #Config.Routes do
                 handleSpawnPoint(i)
             end
+            Citizen.Wait(5)
         else
             handleActiveRoute()
+            Citizen.Wait(100)
         end
     end
 end)
