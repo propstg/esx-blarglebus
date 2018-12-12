@@ -1,12 +1,12 @@
-function createRandomPedInArea(x, y, z)
+function createRandomPedInArea(coords)
     local modelName = loadModel(randomlySelectModel())
 
-    x = x + math.random() * 4 - 2
-    y = y + math.random() * 4 - 2
+    local x = coords.x + math.random() * 4 - 2
+    local y = coords.y + math.random() * 4 - 2
     local heading = math.random() * 360
     
-    local ped = CreatePed(4, modelName, x, y, z, heading, true, false)
-    FreezeEntityPosition(ped, true)
+    local ped = CreatePed(4, modelName, x, y, coords.z, heading, true, false)
+    wanderInArea(coords)
     return ped
 end
 
@@ -19,8 +19,18 @@ function leaveVehicle(ped, vehicle)
     end
 end
 
+function wanderInArea(ped, stopCoords)
+    TaskWanderInArea(ped, 
+        stopCoords.x,
+        stopCoords.y,
+        stopCoords.z,
+        Config.Marker.Size / 2.0, -- radius
+        Config.Marker.Size / 2.0, -- minimalLength
+        5000                      -- timeBetweenWalks
+    )
+end
+
 function enterVehicle(ped, vehicle, seatNumber)
-    FreezeEntityPosition(ped, false)
     Citizen.Wait(10)
     TaskEnterVehicle(ped, 
         vehicle, 
@@ -75,6 +85,7 @@ end
 Peds = {
     CreateRandomPedInArea = createRandomPedInArea,
     LeaveVehicle = leaveVehicle,
+    WanderInArea = wanderInArea,
     EnterVehicle = enterVehicle,
     IsPedInVehicleOrDead = isPedInVehicleOrDead,
     IsPedInVehicleDeadOrTooFarAway = isPedInVehicleDeadOrTooFarAway,

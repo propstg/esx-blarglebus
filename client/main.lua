@@ -114,7 +114,7 @@ function handleNormalStop()
     local currentStop = activeRoute.Stops[stopNumber]
 
     if playerDistanceFromCoords(currentStop) < Config.Marker.Size then
-        handleUnloading()
+        handleUnloading(currentStop)
         handleLoading()
 
         if (stopNumber == #activeRoute.Stops) then
@@ -133,7 +133,7 @@ function handleNormalStop()
     end
 end
 
-function handleUnloading()
+function handleUnloading(stopCoords)
     displayWaitMessageUntilStopped()
     openBusDoors()
 
@@ -143,6 +143,7 @@ function handleUnloading()
         table.insert(departingPeds, ped)
         table.insert(pedsToDelete, ped)
         Peds.LeaveVehicle(ped, bus)
+        Peds.WanderInArea(ped, stopCoords)
     end
 
     waitUntilPedsOffBus(departingPeds)
@@ -180,7 +181,7 @@ function openBusDoors()
         SetVehicleDoorOpen(bus, activeRoute.Doors[i], false, false)
     end
 
-    Citizen.Wait(3000)
+    Citizen.Wait(Config.DelayBetweenChanges)
 end
 
 function waitUntilPedsOffBus(departingPeds)
@@ -203,7 +204,7 @@ function waitUntilPedsOffBus(departingPeds)
 end
 
 function handleLoading()
-    Citizen.Wait(3000)
+    Citizen.Wait(Config.DelayBetweenChanges)
 
     if #pedsAtNextStop == 0 then
         SetVehicleDoorsShut(bus, false)
@@ -288,7 +289,7 @@ function setUpNextStop()
     end
 
     for i = 1, numberOfPedsToSpawn do
-        table.insert(pedsAtNextStop, Peds.CreateRandomPedInArea(nextStop.x, nextStop.y, nextStop.z))
+        table.insert(pedsAtNextStop, Peds.CreateRandomPedInArea(nextStop))
         Citizen.Wait(100)
     end
     
