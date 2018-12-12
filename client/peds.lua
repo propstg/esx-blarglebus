@@ -1,12 +1,11 @@
 function createRandomPedInArea(x, y, z)
-    local model = Config.PedModels[math.random(#Config.PedModels)]
-    loadModel(model)
+    local modelName = loadModel(randomlySelectModel())
 
     x = x + math.random() * 4 - 2
     y = y + math.random() * 4 - 2
     local heading = math.random() * 360
     
-    local ped = CreatePed(4, model, x, y, z, heading, true, false)
+    local ped = CreatePed(4, modelName, x, y, z, heading, true, false)
     FreezeEntityPosition(ped, true)
     return ped
 end
@@ -45,12 +44,28 @@ function isPedInVehicleDeadOrTooFarAway(ped, position)
     return GetDistanceBetweenCoords(GetEntityCoords(ped), position.x, position.y, position.z) > 15
 end
 
-function loadModel(model)
-    RequestModel(GetHashKey(model))
-    while not HasModelLoaded(GetHashKey(model)) do
-        RequestModel(GetHashKey(model))
-        Citizen.Wait(10)
+function loadModel(modelName)
+    local loadAttempts = 0
+    local hashKey = GetHashKey(modelName)
+
+    RequestModel(hashKey)
+    while not HasModelLoaded(hashKey) and loadAttempts < 10 do
+        RequestModel(hashKey)
+        loadAttempts = loadAttempts + 1
+        Citizen.Wait(50)
     end
+
+    if loadAttempts == 10 then
+        print ('MODEL NOT LOADED AFTER TEN ATTEMPTS: ' .. modelName)
+        return loadModel(randomlySelectModel())
+    end
+
+    print ('Successfully loaded model: ' .. modelName)
+    return modelName
+end
+
+function randomlySelectModel()
+    return Config.PedModels[math.random(#Config.PedModels)]
 end
 
 Peds = {

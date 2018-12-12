@@ -270,6 +270,7 @@ function setUpNextStop()
 
     for i = 1, numberOfPedsToSpawn do
         table.insert(pedsAtNextStop, Peds.CreateRandomPedInArea(nextStop.x, nextStop.y, nextStop.z))
+        Citizen.Wait(100)
     end
     
     Markers.SetMarkers({nextStop})
