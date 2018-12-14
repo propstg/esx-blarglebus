@@ -43,6 +43,7 @@ end)
 Citizen.CreateThread(function ()
     while true do
         if #pedsToDelete > 0 and (not isOnDuty or playerDistanceFromCoords(lastStopCoords) > Config.DeleteDistance) then
+            print('deleting peds')
             while #pedsToDelete > 0 do
                 Peds.DeletePed(table.remove(pedsToDelete))
                 Citizen.Wait(10)
@@ -114,6 +115,7 @@ function handleNormalStop()
     local currentStop = activeRoute.Stops[stopNumber]
 
     if playerDistanceFromCoords(currentStop) < Config.Marker.Size then
+        lastStopCoords = currentStop
         handleUnloading(currentStop)
         handleLoading()
 
@@ -128,8 +130,6 @@ function handleNormalStop()
             setUpNextStop()
             stopNumber = stopNumber + 1
         end
-
-        lastStopCoords = currentStop
     end
 end
 
@@ -145,13 +145,12 @@ function handleUnloading(stopCoords)
         table.insert(departingPeds, ped)
         table.insert(pedsToDelete, ped)
         Peds.LeaveVehicle(ped, bus)
-        Peds.WanderInArea(ped, stopCoords)
     end
 
     waitUntilPedsOffBus(departingPeds)
 
     for i = 1, #departingPeds do
-        SetEntityAsNoLongerNeeded(departingPeds[i])
+        TaskGoToCoordAnyMeans(departingPeds[i], stopCoords.x, stopCoords.y, stopCoords.z, 1.0, 0, 0, 786603, 0.0);
     end
 end
 
@@ -292,10 +291,12 @@ function setUpNextStop()
         print ('next stop is None, randomly deciding to spawn ' .. numberOfPedsToSpawn .. 'peds')
     end
 
-    for i = 1, numberOfPedsToSpawn do
-        table.insert(pedsAtNextStop, Peds.CreateRandomPedInArea(nextStop))
-        Citizen.Wait(100)
-    end
+    Citizen.CreateThread(function()
+        for i = 1, numberOfPedsToSpawn do
+            table.insert(pedsAtNextStop, Peds.CreateRandomPedInArea(nextStop))
+            Citizen.Wait(100)
+        end
+    end)
     
     Markers.SetMarkers({nextStop})
     Blips.SetBlipAndWaypoint(activeRoute.Name, nextStop.x, nextStop.y, nextStop.z)

@@ -6,7 +6,7 @@ function createRandomPedInArea(coords)
     local heading = math.random() * 360
     
     local ped = CreatePed(4, modelName, x, y, coords.z, heading, true, false)
-    wanderInArea(coords)
+    wanderInArea(ped, coords)
     return ped
 end
 
@@ -20,6 +20,7 @@ function leaveVehicle(ped, vehicle)
 end
 
 function wanderInArea(ped, stopCoords)
+    --ClearPedTasksImmediately(ped, true)
     TaskWanderInArea(ped, 
         stopCoords.x,
         stopCoords.y,
@@ -60,7 +61,7 @@ function loadModel(modelName)
 
     RequestModel(hashKey)
     while not HasModelLoaded(hashKey) and loadAttempts < 10 do
-        RequestModel(hashKey)
+        --RequestModel(hashKey)
         loadAttempts = loadAttempts + 1
         Citizen.Wait(50)
     end
@@ -75,6 +76,7 @@ function loadModel(modelName)
 end
 
 function deletePed(ped)
+    SetEntityAsNoLongerNeeded(ped)
     DeletePed(ped)
 end
 
