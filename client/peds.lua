@@ -20,7 +20,6 @@ function leaveVehicle(ped, vehicle)
 end
 
 function wanderInArea(ped, stopCoords)
-    --ClearPedTasksImmediately(ped, true)
     TaskWanderInArea(ped, 
         stopCoords.x,
         stopCoords.y,
@@ -61,7 +60,6 @@ function loadModel(modelName)
 
     RequestModel(hashKey)
     while not HasModelLoaded(hashKey) and loadAttempts < 10 do
-        --RequestModel(hashKey)
         loadAttempts = loadAttempts + 1
         Citizen.Wait(50)
     end
@@ -84,6 +82,12 @@ function randomlySelectModel()
     return Config.PedModels[math.random(#Config.PedModels)]
 end
 
+function walkPedsToLocation(peds, coords)
+    for i = 1, #peds do
+        TaskGoToCoordAnyMeans(peds[i], coords.x, coords.y, coords.z, 1.0, 0, 0, 786603, 0.0);
+    end
+end
+
 Peds = {
     CreateRandomPedInArea = createRandomPedInArea,
     LeaveVehicle = leaveVehicle,
@@ -91,5 +95,6 @@ Peds = {
     EnterVehicle = enterVehicle,
     IsPedInVehicleOrDead = isPedInVehicleOrDead,
     IsPedInVehicleDeadOrTooFarAway = isPedInVehicleDeadOrTooFarAway,
-    DeletePed = deletePed
+    DeletePed = deletePed,
+    WalkPedsToLocation = walkPedsToLocation
 }

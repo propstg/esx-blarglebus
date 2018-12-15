@@ -4,7 +4,6 @@ local isOnDuty = false
 local isRouteFinished = false
 local activeRoute = nil
 local stopNumber = 1
-local bus = nil
 local pedsOnBus = {}
 local pedsAtNextStop = {}
 local numberDepartingPedsNextStop = 0
@@ -72,9 +71,7 @@ function startRoute(route)
     isRouteFinished = false
     activeRoute = Config.Routes[route]
     ESX.ShowNotification(_U('drive_to_first_marker', activeRoute.Stops[1].name))
-    createBus()
-
-    -- TODO charge player for bus rental
+    Bus.CreateBus(activeRoute.SpawnPoint, activeRoute.BusModel)
 
     stopNumber = 0
     setUpNextStop()
@@ -93,19 +90,12 @@ function handleReturningBus()
     local coords = activeRoute.SpawnPoint
 
     if playerDistanceFromCoords(coords) < Config.Marker.Size then
-        while not IsVehicleStopped(bus) do
-            ESX.ShowNotification(_U('stop_bus'))
-            Citizen.Wait(500)
-        end
-
-        DeleteVehicle(bus)
-
-        -- TODO refund money for bus rental
+        Bus.DisplayMessageAndWaitUntilBusStopped(_U('stop_bus'))
 
         TriggerServerEvent('blarglebus:finishRoute', activeRoute.Payment)
         isOnDuty = false
         activeRoute = nil
-        bus = nil
+        Bus.DeleteBus()
 
         Markers.ResetMarkers()
     end
@@ -134,55 +124,32 @@ function handleNormalStop()
 end
 
 function handleUnloading(stopCoords)
-    displayWaitMessageUntilStopped()
-    SetVehicleIndicatorLights(bus, 0, true)
-    SetVehicleIndicatorLights(bus, 1, true)
-    openBusDoors()
+    Bus.DisplayMessageAndWaitUntilBusStopped(determineWaitForPassengersMessage())
+    Bus.OpenDoorsAndActivateHazards(activeRoute.Doors)
 
     local departingPeds = {}
     for i = 1, numberDepartingPedsNextStop do
         local ped = table.remove(pedsOnBus)
         table.insert(departingPeds, ped)
         table.insert(pedsToDelete, ped)
-        Peds.LeaveVehicle(ped, bus)
+        Peds.LeaveVehicle(ped, Bus.GetBus())
     end
 
     waitUntilPedsOffBus(departingPeds)
 
-    for i = 1, #departingPeds do
-        TaskGoToCoordAnyMeans(departingPeds[i], stopCoords.x, stopCoords.y, stopCoords.z, 1.0, 0, 0, 786603, 0.0);
-    end
-end
-
-function displayWaitMessageUntilStopped()
-    local notificationMessage = determineWaitForPassengersMessage()
-
-    while not IsVehicleStopped(bus) do
-        ESX.ShowNotification(notificationMessage)
-        Citizen.Wait(500)
-    end
+    Peds.WalkPedsToLocation(departingPeds, stopCoords)
 end
 
 function determineWaitForPassengersMessage()
-    local notificationMessage = _U('wait_for_passengers')
-
     if numberDepartingPedsNextStop == 0 and #pedsAtNextStop == 0 then
-        notificationMessage = _U('no_passengers_loading_or_unloading')
+        return _U('no_passengers_loading_or_unloading')
     elseif numberDepartingPedsNextStop == 0 then
-        notificationMessage = _U('no_passengers_unloading')
+        return _U('no_passengers_unloading')
     elseif #pedsAtNextStop == 0 then
-        notificationMessage = _U('no_passengers_loading')
+        return _U('no_passengers_loading')
     end
 
-    return notificationMessage
-end
-
-function openBusDoors()
-    for i = 1, #activeRoute.Doors do
-        SetVehicleDoorOpen(bus, activeRoute.Doors[i], false, false)
-    end
-
-    Citizen.Wait(Config.DelayBetweenChanges)
+    return _U('wait_for_passengers')
 end
 
 function waitUntilPedsOffBus(departingPeds)
@@ -208,21 +175,18 @@ function handleLoading()
     Citizen.Wait(Config.DelayBetweenChanges)
 
     if #pedsAtNextStop == 0 then
-        SetVehicleDoorsShut(bus, false)
-        return
+        return Bus.CloseDoorsAndDeactivateHazards()
     end
 
-    local freeSeats = findFreeSeats()
+    local freeSeats = Bus.FindFreeSeats(activeRoute.FirstSeat, activeRoute.Capacity)
 
     for i = 1, #pedsAtNextStop do
-        Peds.EnterVehicle(pedsAtNextStop[i], bus, freeSeats[i])
+        Peds.EnterVehicle(pedsAtNextStop[i], Bus.GetBus(), freeSeats[i])
         table.insert(pedsOnBus, pedsAtNextStop[i])
     end
 
     waitUntilPedsOnBus()
-    SetVehicleDoorsShut(bus, false)
-    SetVehicleIndicatorLights(bus, 0, false)
-    SetVehicleIndicatorLights(bus, 1, false)
+    Bus.CloseDoorsAndDeactivateHazards()
 end
 
 function waitUntilPedsOnBus()
@@ -244,51 +208,21 @@ function waitUntilPedsOnBus()
     end
 end
 
-function findFreeSeats()
-    local freeSeats = {}
-
-    for i = activeRoute.FirstSeat, activeRoute.Capacity + 2 do
-        local result = 'taken'
-        if IsVehicleSeatFree(bus, i) then
-            result = 'free'
-            table.insert(freeSeats, i)
-        end
-        print ('seat ' .. i .. ' is...' .. result)
-    end
-
-    return freeSeats
-end
-
 function setUpNextStop()
     local nextStop = activeRoute.Stops[stopNumber + 1]
     local numberOfPedsToSpawn = 0
     local freeSeats = activeRoute.Capacity - #pedsOnBus
     
     pedsAtNextStop = {}
-    numberDepartingPedsNextStop = 0
 
     if isLastStop(stopNumber + 1) then
-        print ('next stop is last, all peds should depart')
-        numberDepartingPedsNextStop = #pedsOnBus
+        numberOfPedsToSpawn, numberDepartingPedsNextStop = setUpLastStop()
     elseif nextStop.unloadType == Config.UnloadType.All then
-        print ('next stop is All, all peds should unload, should spawn peds equal to capacity')
-        numberOfPedsToSpawn = activeRoute.Capacity
-        numberDepartingPedsNextStop = #pedsOnBus
+        numberOfPedsToSpawn, numberDepartingPedsNextStop = setUpAllStop()
     elseif nextStop.unloadType == Config.UnloadType.Some then
-        numberOfPedsToSpawn = math.random(1, activeRoute.Capacity)
-
-        local minimumDepartingPeds = 1
-
-        if numberOfPedsToSpawn > freeSeats then
-            minimumDepartingPeds = numberOfPedsToSpawn - freeSeats
-        end
-
-        numberDepartingPedsNextStop = math.random(minimumDepartingPeds, #pedsOnBus)
-
-        print ('next stop is Some, randomly decided to spawn ' .. numberOfPedsToSpawn .. ' peds and depart ' .. numberDepartingPedsNextStop)
+        numberOfPedsToSpawn, numberDepartingPedsNextStop = setUpSomeStop(freeSeats)
     elseif nextStop.unloadType == Config.UnloadType.None and freeSeats > 0 then
-        numberOfPedsToSpawn = math.random(1, freeSeats)
-        print ('next stop is None, randomly deciding to spawn ' .. numberOfPedsToSpawn .. 'peds')
+        numberOfPedsToSpawn, numberDepartingPedsNextStop = setUpNoneStop(freeSeats)
     end
 
     Citizen.CreateThread(function()
@@ -302,15 +236,41 @@ function setUpNextStop()
     Blips.SetBlipAndWaypoint(activeRoute.Name, nextStop.x, nextStop.y, nextStop.z)
 end
 
-function isLastStop(stopNumber) return stopNumber == #activeRoute.Stops end
-
-function createBus()
-    local coords = activeRoute.SpawnPoint
-    ESX.Game.SpawnVehicle(activeRoute.BusModel, coords, coords.heading, function(createdBus)
-        bus = createdBus
-        SetVehicleFuelLevel(bus, 100.0)
-    end)
+function isLastStop(stopNumber)
+    return stopNumber == #activeRoute.Stops
 end
+
+function setUpLastStop()
+    print ('next stop is last, all peds should depart')
+    return 0, #pedsOnBus
+end
+
+function setUpAllStop()
+    print ('next stop is All, all peds should unload, should spawn peds equal to capacity')
+    return activeRoute.Capacity, #pedsOnBus
+end
+
+function setUpSomeStop(freeSeats)
+    local numberOfPedsToSpawn = math.random(1, activeRoute.Capacity)
+    local minimumDepartingPeds = 1
+
+    if numberOfPedsToSpawn > freeSeats then
+        minimumDepartingPeds = numberOfPedsToSpawn - freeSeats
+    end
+
+    local numberDeparting = math.random(minimumDepartingPeds, #pedsOnBus)
+
+    print ('next stop is Some, randomly decided to spawn ' .. numberOfPedsToSpawn .. ' peds and depart ' .. numberDeparting)
+    return numberOfPedsToSpawn, numberDeparting
+end
+
+function setUpNoneStop(freeSeats)
+    local numberOfPedsToSpawn = math.random(1, freeSeats)
+
+    print ('next stop is None, randomly deciding to spawn ' .. numberOfPedsToSpawn .. 'peds')
+    return numberOfPedsToSpawn, 0
+end
+
 
 function playerDistanceFromCoords(coords)
     return GetDistanceBetweenCoords(playerPosition, coords.x, coords.y, coords.z, true)
