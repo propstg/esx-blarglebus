@@ -132,7 +132,7 @@ function handleUnloading(stopCoords)
         local ped = table.remove(pedsOnBus)
         table.insert(departingPeds, ped)
         table.insert(pedsToDelete, ped)
-        Peds.LeaveVehicle(ped, Bus.GetBus())
+        Peds.LeaveVehicle(ped, Bus.bus)
     end
 
     waitUntilPedsOffBus(departingPeds)
@@ -181,7 +181,7 @@ function handleLoading()
     local freeSeats = Bus.FindFreeSeats(activeRoute.FirstSeat, activeRoute.Capacity)
 
     for i = 1, #pedsAtNextStop do
-        Peds.EnterVehicle(pedsAtNextStop[i], Bus.GetBus(), freeSeats[i])
+        Peds.EnterVehicle(pedsAtNextStop[i], Bus.bus, freeSeats[i])
         table.insert(pedsOnBus, pedsAtNextStop[i])
     end
 

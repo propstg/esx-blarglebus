@@ -1,70 +1,56 @@
-local bus = nil
+Bus = {}
+Bus.bus = nil
 
-local function createBus(coords, model)
+function Bus.CreateBus(coords, model)
     ESX.Game.SpawnVehicle(model, coords, coords.heading, function(createdBus)
-        bus = createdBus
-        SetVehicleFuelLevel(bus, 100.0)
+        Bus.bus = createdBus
+        SetVehicleFuelLevel(Bus.bus, 100.0)
     end)
 end
 
-local function deleteBus()
-    DeleteVehicle(bus)
-    bus = nil
+function Bus.DeleteBus()
+    DeleteVehicle(Bus.bus)
+    Bus.bus = nil
 end
 
-local function displayMessageAndWaitUntilBusStopped(notificationMessage)
-    while not IsVehicleStopped(bus) do
+function Bus.DisplayMessageAndWaitUntilBusStopped(notificationMessage)
+    while not IsVehicleStopped(Bus.bus) do
         ESX.ShowNotification(notificationMessage)
         Citizen.Wait(500)
     end
 end
 
-local function openDoorsAndActivateHazards(doors)
-    activateHazards(true)
-    openBusDoors(doors)
+function Bus.OpenDoorsAndActivateHazards(doors)
+    Bus.ActivateHazards(true)
+    Bus.OpenBusDoors(doors)
 end
 
-local function openBusDoors(doors)
+function Bus.OpenBusDoors(doors)
     for i = 1, #doors do
-        SetVehicleDoorOpen(bus, doors[i], false, false)
+        SetVehicleDoorOpen(Bus.bus, doors[i], false, false)
     end
 
     Citizen.Wait(Config.DelayBetweenChanges)
 end
 
-local function closeDoorsAndDeactivateHazards()
-    activateHazards(false)
-    SetVehicleDoorsShut(bus, false)
+function Bus.CloseDoorsAndDeactivateHazards()
+    Bus.ActivateHazards(false)
+    SetVehicleDoorsShut(Bus.bus, false)
 end
 
-local activateHazards(isOn)
-    SetVehicleIndicatorLights(bus, 0, isOn)
-    SetVehicleIndicatorLights(bus, 1, isOn)
+function Bus.ActivateHazards(isOn)
+    SetVehicleIndicatorLights(Bus.bus, 0, isOn)
+    SetVehicleIndicatorLights(Bus.bus, 1, isOn)
 end
 
-local function findFreeSeats(firstSeat, capacity)
+function Bus.FindFreeSeats(firstSeat, capacity)
     local freeSeats = {}
 
     for i = firstSeat, capacity do
-        if IsVehicleSeatFree(bus, i) then
+        if IsVehicleSeatFree(Bus.bus, i) then
             table.insert(freeSeats, i)
         end
     end
 
     return freeSeats
 end
-
-local function getBus()
-    return bus
-end
-
-Bus = {
-    CreateBus = createBus,
-    DeleteBus = deleteBus,
-    DisplayMessageAndWaitUntilBusStopped = displayMessageAndWaitUntilBusStopped,
-    IsBusStopped = isBusStopped,
-    OpenDoorsAndActivateHazards = openDoorsAndActivateHazards,
-    CloseDoorsAndDeactivateHazards = closeDoorsAndDeactivateHazards,
-    FindFreeSeats = findFreeSeats,
-    GetBus = getBus
-}
