@@ -26,7 +26,31 @@ end
 
 function drawCircle(coords)
     local markerSize = Config.Marker.Size
-    DrawMarker(1, coords.x, coords.y, coords.z, 0, 0, 0, 0, 0, 0, markerSize, markerSize, markerSize, 20, 200, 20, 100, 0, 0, 2, 0, 0, 0, 0)
+    DrawMarker(22,          -- type, MarkerTypeChevronUpx3
+        coords.x,           -- posX
+        coords.y,           -- posY
+        coords.z + 6.0,     -- posZ
+        0,                  -- dirX
+        0,                  -- dirY
+        0,                  -- dirZ
+        0.0,                -- rotX
+        180.0,              -- rotY
+        0.0,                -- rotZ
+        markerSize / 2.0,   -- scaleX
+        2.0,                -- scaleY
+        10.0,               -- scaleZ
+        20,                 -- red
+        200,                -- green
+        20,                 -- blue
+        100,                -- alpha
+        true,               -- bobUpAndDown
+        true,               -- faceCamera
+        2,                  -- p19 "Typically set to 2. Does not seem to matter directly."
+        1,                  -- rotate
+        0,                  -- textureDict
+        0,                  -- textureName
+        0                   -- drawOnEnts
+    )
 end
 
 Markers = {

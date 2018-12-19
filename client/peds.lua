@@ -1,13 +1,12 @@
-function createRandomPedInArea(x, y, z)
-    local model = Config.PedModels[math.random(#Config.PedModels)]
-    loadModel(model)
+function createRandomPedInArea(coords)
+    local modelName = loadModel(randomlySelectModel())
 
-    x = x + math.random() * 4 - 2
-    y = y + math.random() * 4 - 2
+    local x = coords.x + math.random() * 4 - 2
+    local y = coords.y + math.random() * 4 - 2
     local heading = math.random() * 360
     
-    local ped = CreatePed(4, model, x, y, z, heading, true, false)
-    FreezeEntityPosition(ped, true)
+    local ped = CreatePed(4, modelName, x, y, coords.z, heading, true, false)
+    wanderInArea(ped, coords)
     return ped
 end
 
@@ -20,8 +19,18 @@ function leaveVehicle(ped, vehicle)
     end
 end
 
+function wanderInArea(ped, stopCoords)
+    TaskWanderInArea(ped, 
+        stopCoords.x,
+        stopCoords.y,
+        stopCoords.z,
+        Config.Marker.Size / 2.0, -- radius
+        Config.Marker.Size / 2.0, -- minimalLength
+        5000                      -- timeBetweenWalks
+    )
+end
+
 function enterVehicle(ped, vehicle, seatNumber)
-    FreezeEntityPosition(ped, false)
     Citizen.Wait(10)
     TaskEnterVehicle(ped, 
         vehicle, 
@@ -45,18 +54,47 @@ function isPedInVehicleDeadOrTooFarAway(ped, position)
     return GetDistanceBetweenCoords(GetEntityCoords(ped), position.x, position.y, position.z) > 15
 end
 
-function loadModel(model)
-    RequestModel(GetHashKey(model))
-    while not HasModelLoaded(GetHashKey(model)) do
-        RequestModel(GetHashKey(model))
-        Citizen.Wait(10)
+function loadModel(modelName)
+    local loadAttempts = 0
+    local hashKey = GetHashKey(modelName)
+
+    RequestModel(hashKey)
+    while not HasModelLoaded(hashKey) and loadAttempts < 10 do
+        loadAttempts = loadAttempts + 1
+        Citizen.Wait(50)
+    end
+
+    if loadAttempts == 10 then
+        print ('MODEL NOT LOADED AFTER TEN ATTEMPTS: ' .. modelName)
+        return loadModel(randomlySelectModel())
+    end
+
+    print ('Successfully loaded model: ' .. modelName)
+    return modelName
+end
+
+function deletePed(ped)
+    SetEntityAsNoLongerNeeded(ped)
+    DeletePed(ped)
+end
+
+function randomlySelectModel()
+    return Config.PedModels[math.random(#Config.PedModels)]
+end
+
+function walkPedsToLocation(peds, coords)
+    for i = 1, #peds do
+        TaskGoToCoordAnyMeans(peds[i], coords.x, coords.y, coords.z, 1.0, 0, 0, 786603, 0.0);
     end
 end
 
 Peds = {
     CreateRandomPedInArea = createRandomPedInArea,
     LeaveVehicle = leaveVehicle,
+    WanderInArea = wanderInArea,
     EnterVehicle = enterVehicle,
     IsPedInVehicleOrDead = isPedInVehicleOrDead,
-    IsPedInVehicleDeadOrTooFarAway = isPedInVehicleDeadOrTooFarAway
+    IsPedInVehicleDeadOrTooFarAway = isPedInVehicleDeadOrTooFarAway,
+    DeletePed = deletePed,
+    WalkPedsToLocation = walkPedsToLocation
 }

@@ -1,52 +1,71 @@
 Config = {}
 Config.Locale = 'en'
-Config.EnterVehicleTimeout = 5000
+Config.UseFrFuel = true
+Config.EnterVehicleTimeout = 10000
+Config.DelayBetweenChanges = 1000
+Config.DeleteDistance = 100.0
 Config.Marker = {
     Size = 10.0
+}
+
+Config.UnloadType = {
+    All = "all", Some = "some", None = "none"
 }
 
 AirportRoute = {
     Name = 'airport_route',
     BusModel = 'rentalbus',
-    Capacity = 6,
+    Capacity = 8,
+    Doors = {2, 3},
+    FirstSeat = 1,
     SpawnPoint = {x = -923.7001, y = -2283.8886, z = 6.7090, heading = 333.65},
     Payment = 8000,
     Stops = {
-        {x = -1664.8002, y = -538.1304, z = 35.2513, name = 'Banner Hotel & Spa'},
-        {x = -1860.3963, y = -350.8236, z = 49.6338, name = 'Von Crastenburg'},
-        {x = -1031.2937, y = -2729.3339, z = 13.7566, name = 'Airport'},
-        {x = -1304.3708, y = -407.5448, z = 35.5009, name = 'Elgin House'},
-        {x = -1333.0507, y = -1089.8925, z = 6.9793, name = 'Venetian'},
-        {x = -1031.2937, y = -2729.3339, z = 13.7566, name = 'Airport'},
-        {x = -824.8701, y = -1221.3138, z = 7.3654, name = 'The Viceroy'},
-        {x = -880.8395, y = -2110.7658, z = 9.0868, name = 'Crastenburg'},
-        {x = -695.0627, y = -2283.1557, z = 13.0476, name = 'Opium Nights Hotel'},
-        {x = -1031.2937, y = -2729.3339, z = 13.7566, name = 'Airport'},
+        {x = -1664.8002, y = -538.1304, z = 35.2513, name = 'Banner Hotel & Spa', unloadType = Config.UnloadType.None},
+        {x = -1860.3963, y = -350.8236, z = 49.6338, name = 'Von Crastenburg', unloadType = Config.UnloadType.None},
+        {x = -1031.2937, y = -2729.3339, z = 13.7566, name = 'Airport', unloadType = Config.UnloadType.All},
+        {x = -1304.3708, y = -407.5448, z = 35.5009, name = 'Elgin House', unloadType = Config.UnloadType.Some},
+        {x = -1333.0507, y = -1089.8925, z = 6.9793, name = 'Venetian', unloadType = Config.UnloadType.Some},
+        {x = -1031.2937, y = -2729.3339, z = 13.7566, name = 'Airport', unloadType = Config.UnloadType.All},
+        {x = -824.8701, y = -1221.3138, z = 7.3654, name = 'The Viceroy', unloadType = Config.UnloadType.Some},
+        {x = -880.8395, y = -2110.7658, z = 9.0868, name = 'Crastenburg', unloadType = Config.UnloadType.Some},
+        {x = -695.0627, y = -2283.1557, z = 13.0476, name = 'Opium Nights Hotel', unloadType = Config.UnloadType.Some},
+        {x = -1031.2937, y = -2729.3339, z = 13.7566, name = 'Airport', unloadType = Config.UnloadType.All},
     }
 }
 
 IntercityRoute = {
     Name = 'intercity_route',
-    BusModel = 'coach',
-    Capacity = 9,
+    BusModel = 'bus',
+    Capacity = 15,
+    Doors = {0, 1, 2, 3},
+    FirstSeat = 1,
     SpawnPoint = {x = 427.6807, y = -582.7913, z = 28.5165, heading = 135.64},
     Payment = 15000,
     Stops = {
-        {x = 424.7632, y = -638.9176, z = 28.5001, heading = 'Dashound Bus Center'},
-        {x = 2237.2424, y = 3190.7673, z = 48.7102, name = 'Senora National Park'},
-        {x = 2094.8310, y = 3566.1850, z = 41.8067, name = 'Senora National Park'},
-        {x = 1063.4536, y = 2675.3242, z = 39.3417, name = 'Near Harmony'},
-        {x = 1962.9892, y = 3710.2802, z = 32.2184, name = 'Sandy Shores'},
-        {x = 1660.6237, y = 4857.0190, z = 41.2123, name = 'Grapeseed'},
-        {x = -17.2458, y = 6500.5517, z = 31.5728, name = 'Paleto Bay'},
-        {x = -329.8910, y = 6185.0571, z = 31.6218, name = 'Paleto Bay'},
+        {x = 424.7632, y = -638.9176, z = 28.5001, name = 'Dashound Bus Center', unloadType = Config.UnloadType.All},
+        {x = -2973.2265, y = 408.1283, z = 15.1100, name = 'Banham Canyon', unloadType = Config.UnloadType.Some},
+        {x = -2522.2990, y = 2340.5200, z = 33.0598, name = 'Lago Zancudo', unloadType = Config.UnloadType.Some},
+        {x = -2285.6760, y = 4265.5454, z = 43.7155, name = 'North Chumash', unloadType = Config.UnloadType.Some},
+        {x = -1525.0812, y = 4949.1962, z = 61.9035, name = 'Chiliad Mtn State Park', unloadType = Config.UnloadType.Some},
+        {x = -329.8910, y = 6185.0571, z = 31.6218, name = 'Paleto Bay', unloadType = Config.UnloadType.Some},
+        {x = -17.2458, y = 6500.5517, z = 31.5728, name = 'Paleto Bay', unloadType = Config.UnloadType.Some},
+        {x = 1660.6237, y = 4857.0190, z = 41.2123, name = 'Grapeseed', unloadType = Config.UnloadType.Some},
+        {x = 1962.9892, y = 3710.2802, z = 32.2184, name = 'Sandy Shores', unloadType = Config.UnloadType.Some},
+        {x = 2094.8310, y = 3566.1850, z = 41.8067, name = 'Senora National Park', unloadType = Config.UnloadType.Some},
+        {x = 2237.2424, y = 3190.7673, z = 48.7102, name = 'Senora National Park', unloadType = Config.UnloadType.Some},
+        {x = 549.9940, y = 2700.2866, z = 42.1508, name = 'Harmony', unloadType = Config.UnloadType.Some},
+        {x = 424.7632, y = -638.9176, z = 28.5001, name = 'Dashound Bus Center', unloadType = Config.UnloadType.All},
     }
 }
 
+--TODO Define stops for vinewood route
 VinewoodRoute = {
     Name = 'vinewood_route',
     BusModel = 'bus',
     Capacity = 15,
+    Doors = {1},
+    FirstSeat = 2,
     SpawnPoint = {x = 465.6447, y = -615.9630, z = 28.4993, heading = 174.2},
     Payment = 8000,
     Stops = {
@@ -59,7 +78,7 @@ VinewoodRoute = {
 }
 
 Config.Routes = {
-    AirportRoute, IntercityRoute, VinewoodRoute
+    AirportRoute, IntercityRoute, -- TODO VinewoodRoute
 }
 
 Config.PedModels = {
@@ -110,7 +129,7 @@ Config.PedModels = {
     'a_f_y_golfer_01',
     'a_f_y_hiker_01',
     'a_f_y_hippie_01',
-    'a_f_y_hipster_01',
+    --'a_f_y_hipster_01',
     'a_f_y_hipster_02',
     'a_f_y_hipster_03',
     'a_f_y_hipster_04',
@@ -199,7 +218,7 @@ Config.PedModels = {
     'a_m_y_breakdance_01',
     'a_m_y_busicas_01',
     'a_m_y_business_01',
-    'a_m_y_business_02',
+    --'a_m_y_business_02',
     'a_m_y_business_03',
     'a_m_y_cyclist_01',
     'a_m_y_dhill_01',
@@ -272,7 +291,7 @@ Config.PedModels = {
     'cs_davenorton',
     'cs_debra',
     'cs_denise',
-    'cs_devin',
+    --'cs_devin',
     'cs_dom',
     'cs_dreyfuss',
     'cs_drfriedlander',
@@ -344,14 +363,13 @@ Config.PedModels = {
     'csb_chef',
     'csb_chin_goon',
     'csb_cletus',
-    'csb_cop',
     'csb_customer',
     'csb_denise_friend',
     'csb_fos_rep',
     'csb_g',
     'csb_groom',
     'csb_grove_str_dlr',
-    'csb_hao',
+    --'csb_hao',
     'csb_hugh',
     'csb_imran',
     'csb_janitor',
@@ -461,7 +479,6 @@ Config.PedModels = {
     'ig_jewelass',
     'ig_jimmyboston',
     'ig_jimmydisanto',
-    'ig_joeminuteman',
     'ig_johnnyklebitz',
     'ig_josef',
     'ig_josh',
@@ -556,26 +573,19 @@ Config.PedModels = {
     'mp_m_waremech_01',
     'mp_m_weed_01',
     'mp_s_m_armoured_01',
-    'player_one',
-    'player_two',
-    'player_zero',
     's_f_m_fembarber',
-    's_f_m_maid_01',
     's_f_m_shop_high',
     's_f_m_sweatshop_01',
     's_f_y_airhostess_01',
     's_f_y_bartender_01',
     's_f_y_baywatch_01',
-    's_f_y_cop_01',
     's_f_y_factory_01',
     's_f_y_hooker_01',
     's_f_y_hooker_02',
     's_f_y_hooker_03',
     's_f_y_migrant_01',
     's_f_y_movprem_01',
-    's_f_y_ranger_01',
     's_f_y_scrubs_01',
-    's_f_y_sheriff_01',
     's_f_y_shop_low',
     's_f_y_shop_mid',
     's_f_y_stripper_01',
@@ -618,10 +628,7 @@ Config.PedModels = {
     's_m_m_pilot_02',
     's_m_m_postal_01',
     's_m_m_postal_02',
-    's_m_m_prisguard_01',
     's_m_m_scientist_01',
-    's_m_m_security_01',
-    's_m_m_snowcop_01',
     's_m_m_strperf_01',
     's_m_m_strpreach_01',
     's_m_m_strvend_01',
@@ -636,13 +643,10 @@ Config.PedModels = {
     's_m_y_barman_01',
     's_m_y_baywatch_01',
     's_m_y_blackops_01',
-    's_m_y_blackops_02',
-    's_m_y_busboy_01',
     's_m_y_chef_01',
     's_m_y_clown_01',
     's_m_y_construct_01',
     's_m_y_construct_02',
-    's_m_y_cop_01',
     's_m_y_dealer_01',
     's_m_y_devinsec_01',
     's_m_y_dockwork_01',
@@ -653,21 +657,13 @@ Config.PedModels = {
     's_m_y_fireman_01',
     's_m_y_garbage',
     's_m_y_grip_01',
-    's_m_y_hwaycop_01',
-    's_m_y_marine_01',
-    's_m_y_marine_02',
-    's_m_y_marine_03',
     's_m_y_mime',
     's_m_y_pestcont_01',
     's_m_y_pilot_01',
-    's_m_y_prismuscl_01',
-    's_m_y_prisoner_01',
     's_m_y_ranger_01',
     's_m_y_robber_01',
-    's_m_y_sheriff_01',
     's_m_y_shop_mask',
     's_m_y_strvend_01',
-    's_m_y_swat_01',
     's_m_y_uscg_01',
     's_m_y_valet_01',
     's_m_y_waiter_01',
@@ -728,10 +724,9 @@ Config.PedModels = {
     'u_m_y_paparazzi',
     'u_m_y_party_01',
     'u_m_y_pogo_01',
-    'u_m_y_prisoner_01',
     'u_m_y_proldriver_01',
     'u_m_y_rsranger_01',
-    'u_m_y_sbike',
+    --'u_m_y_sbike',
     'u_m_y_staggrm_01',
     'u_m_y_tattoo_01',
     'u_m_y_zombie_01'
