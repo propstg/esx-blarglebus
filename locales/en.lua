@@ -12,8 +12,8 @@ Locales['en'] = {
 
     ['airport_route']                       = 'Airport Shuttle',
     ['start_airport_route']                 = 'press ~INPUT_PICKUP~ to start ~g~airport route',
-    ['intercity_route']                     = 'Intercity Route',
-    ['start_intercity_route']               = 'press ~INPUT_PICKUP~ to start ~g~intercity route',
-    ['vinewood_route']                      = 'Vinewood Route',
-    ['start_vinewood_route']                = 'press ~INPUT_PICKUP~ to start ~g~Vinewood route',
+    ['intercity_route']                     = 'Scenic Route',
+    ['start_intercity_route']               = 'press ~INPUT_PICKUP~ to start ~g~scenic route',
+    ['vinewood_route']                      = 'Los Santos Route',
+    ['start_vinewood_route']                = 'press ~INPUT_PICKUP~ to start ~g~Los Santos route',
 }
