@@ -1,24 +1,20 @@
-local routeBlips = {}
+Blips = {}
+Blips.routeBlips = {}
 
-local function startBlips()
-    for i = 1, #Config.Routes do
-        local coords = Config.Routes[i].SpawnPoint
+function Blips.StartBlips()
+    for _, route in pairs(Config.Routes) do
+        local coords = route.SpawnPoint
         local blip = AddBlipForCoord(coords.x, coords.y, coords.z)
         SetBlipSprite(blip, 513)
         SetBlipAsShortRange(blip, true)
         BeginTextCommandSetBlipName('STRING')
-        AddTextComponentString(_U(Config.Routes[i].Name))
+        AddTextComponentString(_U(route.Name))
         EndTextCommandSetBlipName(blip)
-        routeBlips[Config.Routes[i].Name] = blip
+        Blips.routeBlips[route.Name] = blip
     end
 end
 
-local function setBlipAndWaypoint(routeName, x, y, z)
-    SetBlipCoords(routeBlips[routeName], x, y, z)
+function Blips.SetBlipAndWaypoint(routeName, x, y, z)
+    SetBlipCoords(Blips.routeBlips[routeName], x, y, z)
     SetNewWaypoint(x, y)
 end
-
-Blips = {
-    StartBlips = startBlips,
-    SetBlipAndWaypoint = setBlipAndWaypoint
-}

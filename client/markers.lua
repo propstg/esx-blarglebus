@@ -1,30 +1,31 @@
-markerPositions = {}
+Markers = {}
+Markers.markerPositions = {}
 
-function startMarkers()
-    initNotOnDutyMarkers()
+function Markers.StartMarkers()
+    Markers.InitNotOnDutyMarkers()
 
     Citizen.CreateThread(function ()
         while true do
             Citizen.Wait(10)
     
-            for i = 1, #markerPositions do
-                drawCircle(markerPositions[i])
+            for _, markerPosition in pairs(Markers.markerPositions) do
+                Markers.DrawCircle(markerPosition)
             end
         end
     end)
 end
 
-function setMarkers(markersTable)
-    markerPositions = markersTable
+function Markers.SetMarkers(markersTable)
+    Markers.markerPositions = markersTable
 end
 
-function initNotOnDutyMarkers()
-    for i = 1, #Config.Routes do
-        table.insert(markerPositions, Config.Routes[i].SpawnPoint)
+function Markers.InitNotOnDutyMarkers()
+    for _, markerPosition in pairs(Config.Routes) do
+        table.insert(Markers.markerPositions, markerPosition.SpawnPoint)
     end
 end
 
-function drawCircle(coords)
+function Markers.DrawCircle(coords)
     local markerSize = Config.Marker.Size
     DrawMarker(22,          -- type, MarkerTypeChevronUpx3
         coords.x,           -- posX
@@ -52,9 +53,3 @@ function drawCircle(coords)
         0                   -- drawOnEnts
     )
 end
-
-Markers = {
-    StartMarkers = startMarkers,
-    SetMarkers = setMarkers,
-    ResetMarkers = initNotOnDutyMarkers
-}
