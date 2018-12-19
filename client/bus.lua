@@ -9,7 +9,7 @@ function Bus.CreateBus(coords, model)
 end
 
 function Bus.WaitForFirstEntryAndFillTankIfNeededAsync()
-    if exports.frfuel == nil then
+    if not Config.UseFrFuel then
         return
     end
 
@@ -19,7 +19,7 @@ function Bus.WaitForFirstEntryAndFillTankIfNeededAsync()
         while true do
             Citizen.Wait(500)
             
-            if GetVehiclePedIsUsing(PlayerPedId()) == Bus.bus then
+            if GetVehiclePedIsIn(PlayerPedId(), false) == Bus.bus then
                 exports.frfuel:setFuel(maxFuel)
                 break
             end

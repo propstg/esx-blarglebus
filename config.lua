@@ -1,5 +1,6 @@
 Config = {}
 Config.Locale = 'en'
+Config.UseFrFuel = true
 Config.EnterVehicleTimeout = 10000
 Config.DelayBetweenChanges = 1000
 Config.DeleteDistance = 100.0
