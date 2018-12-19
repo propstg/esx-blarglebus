@@ -4,7 +4,26 @@ Bus.bus = nil
 function Bus.CreateBus(coords, model)
     ESX.Game.SpawnVehicle(model, coords, coords.heading, function(createdBus)
         Bus.bus = createdBus
-        SetVehicleFuelLevel(Bus.bus, 100.0)
+        Bus.WaitForFirstEntryAndFillTankIfNeededAsync()
+    end)
+end
+
+function Bus.WaitForFirstEntryAndFillTankIfNeededAsync()
+    if exports.frfuel == nil then
+        return
+    end
+
+    Citizen.CreateThread(function()
+        local maxFuel = GetVehicleHandlingFloat(Bus.bus, 'CHandlingData', 'fPetrolTankVolume')
+
+        while true do
+            Citizen.Wait(500)
+            
+            if GetVehiclePedIsUsing(PlayerPedId()) == Bus.bus then
+                exports.frfuel:setFuel(maxFuel)
+                break
+            end
+        end
     end)
 end
 
