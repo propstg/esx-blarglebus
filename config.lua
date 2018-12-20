@@ -20,6 +20,7 @@ AirportRoute = {
     FirstSeat = 1,
     SpawnPoint = {x = -923.7001, y = -2283.8886, z = 6.7090, heading = 333.65},
     Payment = 8000,
+    PaymentPerPassenger = 10,
     Stops = {
         {x = -1664.8002, y = -538.1304, z = 35.2513, name = 'Banner Hotel & Spa', unloadType = Config.UnloadType.None},
         {x = -1860.3963, y = -350.8236, z = 49.6338, name = 'Von Crastenburg', unloadType = Config.UnloadType.None},
@@ -42,6 +43,7 @@ IntercityRoute = {
     FirstSeat = 1,
     SpawnPoint = {x = 427.6807, y = -582.7913, z = 28.5165, heading = 135.64},
     Payment = 15000,
+    PaymentPerPassenger = 50,
     Stops = {
         {x = 424.7632, y = -638.9176, z = 28.5001, name = 'Dashound Bus Center', unloadType = Config.UnloadType.All},
         {x = -2973.2265, y = 408.1283, z = 15.1100, name = 'Banham Canyon', unloadType = Config.UnloadType.Some},
@@ -52,7 +54,6 @@ IntercityRoute = {
         {x = -17.2458, y = 6500.5517, z = 31.5728, name = 'Paleto Bay', unloadType = Config.UnloadType.Some},
         {x = 1660.6237, y = 4857.0190, z = 41.2123, name = 'Grapeseed', unloadType = Config.UnloadType.Some},
         {x = 1962.9892, y = 3710.2802, z = 32.2184, name = 'Sandy Shores', unloadType = Config.UnloadType.Some},
-        {x = 2094.8310, y = 3566.1850, z = 41.8067, name = 'Senora National Park', unloadType = Config.UnloadType.Some},
         {x = 2237.2424, y = 3190.7673, z = 48.7102, name = 'Senora National Park', unloadType = Config.UnloadType.Some},
         {x = 549.9940, y = 2700.2866, z = 42.1508, name = 'Harmony', unloadType = Config.UnloadType.Some},
         {x = 424.7632, y = -638.9176, z = 28.5001, name = 'Dashound Bus Center', unloadType = Config.UnloadType.All},

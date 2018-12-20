@@ -151,6 +151,7 @@ function handleNormalStop()
         lastStopCoords = currentStop
         handleUnloading(currentStop)
         handleLoading()
+        payForEachPedLoaded(#pedsAtNextStop)
 
         if (stopNumber == #activeRoute.Stops) then
             local coords = activeRoute.SpawnPoint
@@ -248,6 +249,14 @@ function waitUntilPedsOnBus()
             end
             Citizen.Wait(200)
         end
+    end
+end
+
+function payForEachPedLoaded(numberOfPeds)
+    if numberOfPeds > 0 then
+        local amountToPay = numberOfPeds * activeRoute.PaymentPerPassenger
+        TriggerServerEvent('blarglebus:passengersLoaded', amountToPay)
+        ESX.ShowNotification(_U('passengers_loaded', numberOfPeds, amountToPay))
     end
 end
 
