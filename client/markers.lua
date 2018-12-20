@@ -23,6 +23,10 @@ function Markers.SetMarkers(markersTable)
     Markers.markerPositions = markersTable
 end
 
+function Markers.ResetMarkers()
+    Markers.InitNotOnDutyMarkers()
+end
+
 function Markers.InitNotOnDutyMarkers()
     for _, markerPosition in pairs(Config.Routes) do
         table.insert(Markers.markerPositions, markerPosition.SpawnPoint)

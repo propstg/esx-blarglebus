@@ -15,8 +15,6 @@ local isBusDriver = false
 local playerPosition = nil
 local playerPed = nil
 
-RegisterNetEvent('esx:setJob')
-AddEventHandler('esx:setJob', handleJobChange)
 
 Citizen.CreateThread(function ()
     while ESX == nil do
@@ -25,6 +23,8 @@ Citizen.CreateThread(function ()
     end
 
     handleJobChange(ESX.GetPlayerData().job)
+    RegisterNetEvent('esx:setJob')
+    AddEventHandler('esx:setJob', handleJobChange)
 
     while true do
         if isBusDriver then
@@ -61,7 +61,7 @@ end)
 
 function handleJobChange(job)
     local wasBusDriver = isBusDriver
-    isBusDriver = job == 'busdriver'
+    isBusDriver = job.name == 'busdriver'
 
     if isBusDriver ~= wasBusDriver then
         if isBusDriver then
