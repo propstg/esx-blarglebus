@@ -18,3 +18,9 @@ function Blips.SetBlipAndWaypoint(routeName, x, y, z)
     SetBlipCoords(Blips.routeBlips[routeName], x, y, z)
     SetNewWaypoint(x, y)
 end
+
+function Blips.StopBlips()
+    for _, blip in pairs(Blips.routeBlips) do
+        RemoveBlip(blip)
+    end
+end

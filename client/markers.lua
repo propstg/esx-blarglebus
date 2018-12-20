@@ -15,6 +15,10 @@ function Markers.StartMarkers()
     end)
 end
 
+function Markers.StopMarkers()
+    Markers.markerPositions = {}
+end
+
 function Markers.SetMarkers(markersTable)
     Markers.markerPositions = markersTable
 end

@@ -11,11 +11,12 @@ local numberDepartingPedsNextStop = 0
 local lastStopCoords = {}
 local pedsToDelete = {}
 
+local isBusDriver = false
 local playerPosition = nil
 local playerPed = nil
 
-Markers.StartMarkers()
-Blips.StartBlips()
+RegisterNetEvent('esx:setJob')
+AddEventHandler('esx:setJob', handleJobChange)
 
 Citizen.CreateThread(function ()
     while ESX == nil do
@@ -23,18 +24,24 @@ Citizen.CreateThread(function ()
         Citizen.Wait(0)
     end
 
-    while true do
-        playerPed = PlayerPedId()
-        playerPosition = GetEntityCoords(playerPed)
+    handleJobChange(ESX.GetPlayerData().job)
 
-        if not isOnDuty then
-            for i = 1, #Config.Routes do
-                handleSpawnPoint(i)
+    while true do
+        if isBusDriver then
+            playerPed = PlayerPedId()
+            playerPosition = GetEntityCoords(playerPed)
+
+            if not isOnDuty then
+                for i = 1, #Config.Routes do
+                    handleSpawnPoint(i)
+                end
+                Citizen.Wait(5)
+            else
+                handleActiveRoute()
+                Citizen.Wait(100)
             end
-            Citizen.Wait(5)
         else
-            handleActiveRoute()
-            Citizen.Wait(100)
+            Citizen.Wait(1000)
         end
     end
 end)
@@ -42,7 +49,6 @@ end)
 Citizen.CreateThread(function ()
     while true do
         if #pedsToDelete > 0 and (not isOnDuty or playerDistanceFromCoords(lastStopCoords) > Config.DeleteDistance) then
-            print('deleting peds')
             while #pedsToDelete > 0 do
                 Peds.DeletePed(table.remove(pedsToDelete))
                 Citizen.Wait(10)
@@ -52,6 +58,43 @@ Citizen.CreateThread(function ()
         Citizen.Wait(5000)
     end
 end)
+
+function handleJobChange(job)
+    local wasBusDriver = isBusDriver
+    isBusDriver = job == 'busdriver'
+
+    if isBusDriver ~= wasBusDriver then
+        if isBusDriver then
+            handleNowBusDriver()
+        else
+            handleNoLongerBusDriver()
+        end
+    end
+end
+
+function handleNowBusDriver()
+    Markers.StartMarkers()
+    Blips.StartBlips()
+end
+
+function handleNoLongerBusDriver()
+    isOnDuty = false
+    activeRoute = nil
+    deletePeds(pedsToDelete)
+    deletePeds(pedsAtNextStop)
+    deletePeds(pedsOnBus)
+    Bus.DeleteBus()
+
+    Markers.StopMarkers()
+    Blips.StopBlips()
+end
+
+function deletePeds(peds)
+    while #peds > 0 do
+        Peds.DeletePed(table.remove(peds))
+        Citizen.Wait(10)
+    end
+end
 
 function handleSpawnPoint(locationIndex)
     local route = Config.Routes[locationIndex]
