@@ -28,6 +28,7 @@ Citizen.CreateThread(function ()
             handleJobChange(playerData.job)
             break
         end
+	Citizen.Wait(10)
     end
 
     RegisterNetEvent('esx:setJob')
