@@ -111,7 +111,7 @@ function handleSpawnPoint(locationIndex)
     local coords = route.SpawnPoint;
     
     if playerDistanceFromCoords(coords) < Config.Marker.Size then
-        ESX.ShowHelpNotification(_U('start_route', route.Name))
+        ESX.ShowHelpNotification(_U('start_route', _(route.Name)))
 
         if IsControlJustPressed(1, E_KEY) then
             startRoute(locationIndex)
@@ -123,7 +123,7 @@ function startRoute(route)
     isOnDuty = true
     isRouteFinished = false
     activeRoute = Config.Routes[route]
-    activeRouteStops = activeRoutes.Stops[math.random(1, #activeRoute.Stops)]
+    activeRouteStops = activeRoute.Stops[math.random(1, #activeRoute.Stops)]
     ESX.ShowNotification(_U('drive_to_first_marker', activeRouteStops[1].name))
     Bus.CreateBus(activeRoute.SpawnPoint, activeRoute.BusModel)
 
