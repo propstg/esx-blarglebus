@@ -8,7 +8,7 @@ local isOnDuty = false
 local isRouteFinished = false
 
 local activeRoute = nil
-local activeRouteStops = nil
+local activeRouteLine = nil
 local stopNumber = 1
 local lastStopCoords = {}
 
@@ -89,7 +89,7 @@ end
 function handleNoLongerBusDriver()
     isOnDuty = false
     activeRoute = nil
-    activeRouteStops = nil
+    activeRouteLine = nil
     deletePeds(pedsToDelete)
     deletePeds(pedsAtNextStop)
     deletePeds(pedsOnBus)
@@ -123,8 +123,8 @@ function startRoute(route)
     isOnDuty = true
     isRouteFinished = false
     activeRoute = Config.Routes[route]
-    activeRouteStops = activeRoute.Stops[math.random(1, #activeRoute.Stops)]
-    ESX.ShowNotification(_U('drive_to_first_marker', activeRouteStops[1].name))
+    activeRouteLine = activeRoute.Lines[math.random(1, #activeRoute.Lines)]
+    ESX.ShowNotification(_U('drive_to_first_marker', _U(activeRouteLine.Name), _U(activeRouteLine.Stops[1].name)))
     Bus.CreateBus(activeRoute.SpawnPoint, activeRoute.BusModel)
 
     stopNumber = 0
@@ -149,7 +149,7 @@ function handleReturningBus()
         TriggerServerEvent('blarglebus:finishRoute', activeRoute.Payment)
         isOnDuty = false
         activeRoute = nil
-        activeRouteStops = nil
+        activeRouteLine = nil
         Bus.DeleteBus()
 
         Markers.ResetMarkers()
@@ -157,7 +157,7 @@ function handleReturningBus()
 end
 
 function handleNormalStop()
-    local currentStop = activeRouteStops[stopNumber]
+    local currentStop = activeRouteLine.Stops[stopNumber]
 
     if playerDistanceFromCoords(currentStop) < Config.Marker.Size then
         lastStopCoords = currentStop
@@ -172,7 +172,7 @@ function handleNormalStop()
             ESX.ShowNotification(_U('return_to_terminal'))
             Blips.SetBlipAndWaypoint(activeRoute.Name, coords.x, coords.y, coords.z)
         else
-            ESX.ShowNotification(_U('drive_to_next_marker', activeRouteStops[stopNumber + 1].name))
+            ESX.ShowNotification(_U('drive_to_next_marker', _U(activeRouteLine.Stops[stopNumber + 1].name)))
             setUpNextStop()
             stopNumber = stopNumber + 1
         end
@@ -209,7 +209,7 @@ function determineWaitForPassengersMessage()
 end
 
 function waitUntilPedsOffBus(departingPeds)
-    local stop = activeRouteStops[stopNumber]
+    local stop = activeRouteLine.Stops[stopNumber]
 
     if #departingPeds == 0 then
         return
@@ -246,7 +246,7 @@ function handleLoading()
 end
 
 function waitUntilPedsOnBus()
-    local stop = activeRouteStops[stopNumber]
+    local stop = activeRouteLine.Stops1[stopNumber]
 
     if #pedsAtNextStop == 0 then 
         return
@@ -273,7 +273,7 @@ function payForEachPedLoaded(numberOfPeds)
 end
 
 function setUpNextStop()
-    local nextStop = activeRouteStops[stopNumber + 1]
+    local nextStop = activeRouteLine.Stops[stopNumber + 1]
     local numberOfPedsToSpawn = 0
     local freeSeats = activeRoute.Capacity - #pedsOnBus
     
@@ -281,11 +281,11 @@ function setUpNextStop()
 
     if isLastStop(stopNumber + 1) then
         numberOfPedsToSpawn, numberDepartingPedsNextStop = setUpLastStop()
-    elseif nextStop.unloadType == Config.UnloadType.All then
+    elseif nextStop.unloadType == UnloadType.All then
         numberOfPedsToSpawn, numberDepartingPedsNextStop = setUpAllStop()
-    elseif nextStop.unloadType == Config.UnloadType.Some then
+    elseif nextStop.unloadType == UnloadType.Some then
         numberOfPedsToSpawn, numberDepartingPedsNextStop = setUpSomeStop(freeSeats)
-    elseif nextStop.unloadType == Config.UnloadType.None and freeSeats > 0 then
+    elseif nextStop.unloadType == UnloadType.None and freeSeats > 0 then
         numberOfPedsToSpawn, numberDepartingPedsNextStop = setUpNoneStop(freeSeats)
     end
 
@@ -301,7 +301,7 @@ function setUpNextStop()
 end
 
 function isLastStop(stopNumber)
-    return stopNumber == #activeRouteStops
+    return stopNumber == #activeRouteLine.Stops
 end
 
 function setUpLastStop()

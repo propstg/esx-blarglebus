@@ -1,5 +1,5 @@
 Locales['en'] = {
-    ['drive_to_first_marker']               = 'Get in bus and drive to first stop at ~g~%s~.',
+    ['drive_to_first_marker']               = 'You have been assigned ~g~%s~s~. Get in bus and drive to first stop at ~g~%s~.',
     ['drive_to_next_marker']                = 'Continue to next stop at ~g~%s~.',
     ['no_passengers_loading_or_unloading']  = 'No passengers loading or unloading on this stop',
     ['no_passengers_unloading']             = 'Wait for passengers to finish loading',
@@ -12,8 +12,14 @@ Locales['en'] = {
     ['stop_bus']                            = 'Stop bus to return it and get paid.',
 
     ['airport_route']                       = 'Airport Shuttle Route',
-    ['intercity_route']                     = 'Scenic Route',
-    ['vinewood_route']                      = 'Los Santos Route',
+    ['scenic_route']                        = 'Scenic Route',
+    ['metro_route']                         = 'Los Santos Transit Metro Route',
+    ['metro_yellow']                        = 'Metro Yellow Line',
+    ['metro_blue']                          = 'Metro Blue Line',
+    ['metro_red']                           = 'Metro Red Line',
+    ['metro_purple']                        = 'Metro Purple Line',
+    ['metro_orange']                        = 'Metro Downtown East',
+    ['metro_black']                         = 'Metro Downtown West',
 
     ['stop_banner_hotel']                   = 'Banner Hotel & Spa',
     ['stop_von_crastenburg']                = 'Von Crastenburg',
@@ -35,4 +41,5 @@ Locales['en'] = {
     ['stop_senora_park']                    = 'Senora National Park',
     ['stop_harmony']                        = 'Harmony',
 
+    ['stop_tbd'] = 'todo'
 }

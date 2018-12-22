@@ -8,83 +8,10 @@ Config.Marker = {
     Size = 10.0
 }
 
-Config.UnloadType = {
-    All = "all", Some = "some", None = "none"
-}
-
-AirportRoute = {
-    Name = 'airport_route',
-    BusModel = 'rentalbus',
-    Capacity = 8,
-    Doors = {2, 3},
-    FirstSeat = 1,
-    SpawnPoint = {x = -923.7001, y = -2283.8886, z = 6.7090, heading = 333.65},
-    Payment = 8000,
-    PaymentPerPassenger = 10,
-    Stops = {
-        {
-            {x = -1664.8002, y = -538.1304,  z = 35.2513, name = _('stop_banner_hotel'), unloadType = Config.UnloadType.None},
-            {x = -1860.3963, y = -350.8236,  z = 49.6338, name = _('stop_von_crastenburg'), unloadType = Config.UnloadType.None},
-            {x = -1031.2937, y = -2729.3339, z = 13.7566, name = _('stop_airport'), unloadType = Config.UnloadType.All},
-            {x = -1304.3708, y = -407.5448,  z = 35.5009, name = _('stop_elgin'), unloadType = Config.UnloadType.Some},
-            {x = -1333.0507, y = -1089.8925, z = 6.9793,  name = _('stop_venetian'), unloadType = Config.UnloadType.Some},
-            {x = -1031.2937, y = -2729.3339, z = 13.7566, name = _('stop_airport'), unloadType = Config.UnloadType.All},
-            {x = -824.8701,  y = -1221.3138, z = 7.3654,  name = _('stop_viceroy'), unloadType = Config.UnloadType.Some},
-            {x = -880.8395,  y = -2110.7658, z = 9.0868,  name = _('stop_crastenburg'), unloadType = Config.UnloadType.Some},
-            {x = -695.0627,  y = -2283.1557, z = 13.0476, name = _('stop_opium_nights'), unloadType = Config.UnloadType.Some},
-            {x = -1031.2937, y = -2729.3339, z = 13.7566, name = _('stop_airport'), unloadType = Config.UnloadType.All},
-        }
-    }
-}
-
-
-
-IntercityRoute = {
-    Name = 'intercity_route',
-    BusModel = 'bus',
-    Capacity = 15,
-    Doors = {0, 1, 2, 3},
-    FirstSeat = 1,
-    SpawnPoint = {x = 427.6807, y = -582.7913, z = 28.5165, heading = 135.64},
-    Payment = 15000,
-    PaymentPerPassenger = 50,
-    Stops = {
-        {
-            {x = 424.7632,   y = -638.9176, z = 28.5001, name = _('stop_dashound'), unloadType = Config.UnloadType.All},
-            {x = -2973.2265, y = 408.1283,  z = 15.1100, name = _('stop_banham_canyon'), unloadType = Config.UnloadType.Some},
-            {x = -2522.2990, y = 2340.5200, z = 33.0598, name = _('stop_lago_zancudo'), unloadType = Config.UnloadType.Some},
-            {x = -2285.6760, y = 4265.5454, z = 43.7155, name = _('stop_north_chumash'), unloadType = Config.UnloadType.Some},
-            {x = -1525.0812, y = 4949.1962, z = 61.9035, name = _('stop_chiliad'), unloadType = Config.UnloadType.Some},
-            {x = -329.8910,  y = 6185.0571, z = 31.6218, name = _('stop_paleto_bay'), unloadType = Config.UnloadType.Some},
-            {x = -17.2458,   y = 6500.5517, z = 31.5728, name = _('stop_paleto_bay'), unloadType = Config.UnloadType.Some},
-            {x = 1660.6237,  y = 4857.0190, z = 41.2123, name = _('stop_grapeseed'), unloadType = Config.UnloadType.Some},
-            {x = 1962.9892,  y = 3710.2802, z = 32.2184, name = _('stop_sandy_shores'), unloadType = Config.UnloadType.Some},
-            {x = 2237.2424,  y = 3190.7673, z = 48.7102, name = _('stop_senora_park'), unloadType = Config.UnloadType.Some},
-            {x = 549.9940,   y = 2700.2866, z = 42.1508, name = _('stop_harmony'), unloadType = Config.UnloadType.Some},
-            {x = 424.7632,   y = -638.9176, z = 28.5001, name = _('stop_dashound'), unloadType = Config.UnloadType.All},
-        }
-    }
-}
-
-MetroRoute = {
-    Name = 'vinewood_route',
-    BusModel = 'bus',
-    Capacity = 15,
-    Doors = {1},
-    FirstSeat = 2,
-    SpawnPoint = {x = 465.6447, y = -615.9630, z = 28.4993, heading = 174.2},
-    Payment = 8000,
-    Stops = {
-        {x = 1, y = 1, z = 1},
-        {x = 1, y = 1, z = 1},
-        {x = 1, y = 1, z = 1},
-        {x = 1, y = 1, z = 1},
-        {x = 1, y = 1, z = 1},
-    }
-}
-
 Config.Routes = {
-    AirportRoute, IntercityRoute, -- TODO VinewoodRoute
+    AirportRoute,
+    ScenicRoute,
+    MetroRoute
 }
 
 Config.PedModels = {
