@@ -58,10 +58,12 @@ Locales['en'] = {
     ['stop_metro_rockford_eastbourne']      = 'Rockford Dr / Eastbourne Way',
     ['stop_metro_delperro_madwayne']        = 'Del Perro Blvd / Mad Wayne Thunder Dr',
     ['stop_metro_dorset_palomino']          = 'Dorset Dr / Palomino Ave',
-    ['stop_metro_sanandreas_calais']              = 'San Andreas Ave / Calais Ave',
+    ['stop_metro_sanandreas_calais']        = 'San Andreas Ave / Calais Ave',
     ['stop_metro_vespucci_ginger']          = 'Vespucci Blvd / Ginger St',
     ['stop_metro_ginger']                   = 'Ginger St',
     ['stop_metro_sanandreas_ginger']        = 'San Andreas Ave / Ginger St',
+    ['stop_metro_alta_gruppe']              = 'Alta St at Gruppe Sehs',
+    ['stop_metro_fib']                      = 'San Andreas Ave at FIB'
 
     ['stop_tbd'] = 'todo'
 }
