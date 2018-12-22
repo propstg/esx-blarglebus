@@ -1,5 +1,6 @@
 Locales['en'] = {
-    ['drive_to_first_marker']               = 'You have been assigned ~g~%s~s~. Get in bus and drive to first stop at ~g~%s~.',
+    ['route_assigned']                      = 'You have been assigned ~g~%s~s~.',
+    ['drive_to_first_marker']               = 'Get in bus and drive to first stop at ~g~%s~.',
     ['drive_to_next_marker']                = 'Continue to next stop at ~g~%s~.',
     ['no_passengers_loading_or_unloading']  = 'No passengers loading or unloading on this stop',
     ['no_passengers_unloading']             = 'Wait for passengers to finish loading',
@@ -62,8 +63,11 @@ Locales['en'] = {
     ['stop_metro_vespucci_ginger']          = 'Vespucci Blvd / Ginger St',
     ['stop_metro_ginger']                   = 'Ginger St',
     ['stop_metro_sanandreas_ginger']        = 'San Andreas Ave / Ginger St',
-    ['stop_metro_alta_gruppe']              = 'Alta St at Gruppe Sehs',
-    ['stop_metro_fib']                      = 'San Andreas Ave at FIB'
-
+    ['stop_metro_alta_gruppe']              = 'Alta St at Gruppe Sechs',
+    ['stop_metro_fib']                      = 'San Andreas Ave at FIB',
+    ['stop_metro_delperro_rockford']        = 'Del Perro Blvd / Rockford Dr',
+    ['stop_metro_delperro_morningwood']     = 'Del Perro Blvd / Morningwood Blvd',
+    ['stop_metro_delperro_plaza']           = 'Del Perro Plaza',
+    ['stop_metro_marathon_baycity']         = 'Marathon Ave / Bay City Ave',
     ['stop_tbd'] = 'todo'
 }

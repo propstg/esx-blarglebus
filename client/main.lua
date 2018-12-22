@@ -124,7 +124,8 @@ function startRoute(route)
     isRouteFinished = false
     activeRoute = Config.Routes[route]
     activeRouteLine = activeRoute.Lines[math.random(1, #activeRoute.Lines)]
-    ESX.ShowNotification(_U('drive_to_first_marker', _U(activeRouteLine.Name), _U(activeRouteLine.Stops[1].name)))
+    ESX.ShowNotification(_U('route_assigned', _U(activeRouteLine.Name)))
+    ESX.ShowNotification(_U('drive_to_first_marker', _U(activeRouteLine.Stops[1].name)))
     Bus.CreateBus(activeRoute.SpawnPoint, activeRoute.BusModel, activeRouteLine.BusColor)
 
     stopNumber = 0
