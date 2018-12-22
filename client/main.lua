@@ -23,7 +23,15 @@ Citizen.CreateThread(function ()
         Citizen.Wait(0)
     end
 
-    handleJobChange(ESX.GetPlayerData().job)
+    while true do
+        local playerData = ESX.GetPlayerData()
+        if playerData.job ~= nil then
+            handleJobChange(playerData.job)
+            break
+        end
+        Citizen.Wait(10)
+    end
+
     RegisterNetEvent('esx:setJob')
     AddEventHandler('esx:setJob', handleJobChange)
 
