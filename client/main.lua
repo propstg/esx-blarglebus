@@ -1,20 +1,21 @@
 local E_KEY = 38
 
-local isOnDuty = false
-local isRouteFinished = false
-local activeRoute = nil
-local stopNumber = 1
-local pedsOnBus = {}
-local pedsAtNextStop = {}
-local numberDepartingPedsNextStop = 0
-
-local lastStopCoords = {}
-local pedsToDelete = {}
-
-local isBusDriver = false
 local playerPosition = nil
 local playerPed = nil
 
+local isBusDriver = false
+local isOnDuty = false
+local isRouteFinished = false
+
+local activeRoute = nil
+local activeRouteStops = nil
+local stopNumber = 1
+local lastStopCoords = {}
+
+local pedsOnBus = {}
+local pedsAtNextStop = {}
+local pedsToDelete = {}
+local numberDepartingPedsNextStop = 0
 
 Citizen.CreateThread(function ()
     while ESX == nil do
@@ -80,6 +81,7 @@ end
 function handleNoLongerBusDriver()
     isOnDuty = false
     activeRoute = nil
+    activeRouteStops = nil
     deletePeds(pedsToDelete)
     deletePeds(pedsAtNextStop)
     deletePeds(pedsOnBus)
@@ -101,7 +103,7 @@ function handleSpawnPoint(locationIndex)
     local coords = route.SpawnPoint;
     
     if playerDistanceFromCoords(coords) < Config.Marker.Size then
-        ESX.ShowHelpNotification(_U('start_'..route.Name))
+        ESX.ShowHelpNotification(_U('start_route', route.Name))
 
         if IsControlJustPressed(1, E_KEY) then
             startRoute(locationIndex)
@@ -113,7 +115,8 @@ function startRoute(route)
     isOnDuty = true
     isRouteFinished = false
     activeRoute = Config.Routes[route]
-    ESX.ShowNotification(_U('drive_to_first_marker', activeRoute.Stops[1].name))
+    activeRouteStops = activeRoutes.Stops[math.random(1, #activeRoute.Stops)]
+    ESX.ShowNotification(_U('drive_to_first_marker', activeRouteStops[1].name))
     Bus.CreateBus(activeRoute.SpawnPoint, activeRoute.BusModel)
 
     stopNumber = 0
@@ -138,6 +141,7 @@ function handleReturningBus()
         TriggerServerEvent('blarglebus:finishRoute', activeRoute.Payment)
         isOnDuty = false
         activeRoute = nil
+        activeRouteStops = nil
         Bus.DeleteBus()
 
         Markers.ResetMarkers()
@@ -145,7 +149,7 @@ function handleReturningBus()
 end
 
 function handleNormalStop()
-    local currentStop = activeRoute.Stops[stopNumber]
+    local currentStop = activeRouteStops[stopNumber]
 
     if playerDistanceFromCoords(currentStop) < Config.Marker.Size then
         lastStopCoords = currentStop
@@ -153,14 +157,14 @@ function handleNormalStop()
         handleLoading()
         payForEachPedLoaded(#pedsAtNextStop)
 
-        if (stopNumber == #activeRoute.Stops) then
+        if (isLastStop(stopNumber)) then
             local coords = activeRoute.SpawnPoint
             isRouteFinished = true
             Markers.SetMarkers({coords})
             ESX.ShowNotification(_U('return_to_terminal'))
             Blips.SetBlipAndWaypoint(activeRoute.Name, coords.x, coords.y, coords.z)
         else
-            ESX.ShowNotification(_U('drive_to_next_marker', activeRoute.Stops[stopNumber + 1].name))
+            ESX.ShowNotification(_U('drive_to_next_marker', activeRouteStops[stopNumber + 1].name))
             setUpNextStop()
             stopNumber = stopNumber + 1
         end
@@ -197,7 +201,7 @@ function determineWaitForPassengersMessage()
 end
 
 function waitUntilPedsOffBus(departingPeds)
-    local stop = activeRoute.Stops[stopNumber]
+    local stop = activeRouteStops[stopNumber]
 
     if #departingPeds == 0 then
         return
@@ -234,7 +238,7 @@ function handleLoading()
 end
 
 function waitUntilPedsOnBus()
-    local stop = activeRoute.Stops[stopNumber]
+    local stop = activeRouteStops[stopNumber]
 
     if #pedsAtNextStop == 0 then 
         return
@@ -261,7 +265,7 @@ function payForEachPedLoaded(numberOfPeds)
 end
 
 function setUpNextStop()
-    local nextStop = activeRoute.Stops[stopNumber + 1]
+    local nextStop = activeRouteStops[stopNumber + 1]
     local numberOfPedsToSpawn = 0
     local freeSeats = activeRoute.Capacity - #pedsOnBus
     
@@ -289,7 +293,7 @@ function setUpNextStop()
 end
 
 function isLastStop(stopNumber)
-    return stopNumber == #activeRoute.Stops
+    return stopNumber == #activeRouteStops
 end
 
 function setUpLastStop()

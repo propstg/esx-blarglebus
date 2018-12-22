@@ -6,15 +6,33 @@ Locales['en'] = {
     ['no_passengers_loading']               = 'Wait for passengers to finish unloading. No passengers loading at this stop',
     ['wait_for_passengers']                 = 'Wait for passengers to finish loading and unloading',
     ['passengers_loaded']                   = '~g~%d~ passengers paid for this stop. Collected $~g~%d~.'
+    
+    ['start_route']                         = 'press ~INPUT_PICKUP~ to start ~g~%s~.',
     ['return_to_terminal']                  = 'Route is finished. Return to the terminal.',
     ['stop_bus']                            = 'Stop bus to return it and get paid.',
 
-    ['start_route']                         = 'press ~INPUT_PICKUP~ to start ~g~%s~.',
-
-    ['airport_route']                       = 'Airport Shuttle',
-    ['start_airport_route']                 = 'press ~INPUT_PICKUP~ to start ~g~airport route',
+    ['airport_route']                       = 'Airport Shuttle Route',
     ['intercity_route']                     = 'Scenic Route',
-    ['start_intercity_route']               = 'press ~INPUT_PICKUP~ to start ~g~scenic route',
     ['vinewood_route']                      = 'Los Santos Route',
-    ['start_vinewood_route']                = 'press ~INPUT_PICKUP~ to start ~g~Los Santos route',
+
+    ['stop_banner_hotel']                   = 'Banner Hotel & Spa',
+    ['stop_von_crastenburg']                = 'Von Crastenburg',
+    ['stop_airport']                        = 'Airport',
+    ['stop_elgin']                          = 'Elgin House',
+    ['stop_venetian']                       = 'Venetian',
+    ['stop_viceroy']                        = 'The Viceroy',
+    ['stop_crastenburg']                    = 'Crastenburg',
+    ['stop_opium_nights']                   = 'Opium Nights Hotel',
+ 
+    ['stop_dashound']                       = 'Dashound Bus Center',
+    ['stop_banham_canyon']                  = 'Banhan Canyon',
+    ['stop_lago_zancudo']                   = 'Lago Zancudo',
+    ['stop_north_chumash']                  = 'North Chumash',
+    ['stop_chiliad']                        = 'Chiliad Mtn State Park',
+    ['stop_paleto_bay']                     = 'Paleto Bay',
+    ['stop_grapeseed']                      = 'Grapeseed',
+    ['stop_sandy_shores']                   = 'Sandy Shores',
+    ['stop_senora_park']                    = 'Senora National Park',
+    ['stop_harmony']                        = 'Harmony',
+
 }
