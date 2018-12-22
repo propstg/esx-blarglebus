@@ -1,11 +1,11 @@
 Bus = {}
 Bus.bus = nil
 
-function Bus.CreateBus(coords, model)
+function Bus.CreateBus(coords, model, color)
     ESX.Game.SpawnVehicle(model, coords, coords.heading, function(createdBus)
         Bus.bus = createdBus
         SetVehicleNumberPlateText(Bus.bus, string.format('BLARG%03d', math.random(0, 999)))
-        SetVehicleColours(Bus.bus, 12, 12)
+        SetVehicleColours(Bus.bus, color, color)
         Bus.WaitForFirstEntryAndFillTankIfNeededAsync()
     end)
 end
