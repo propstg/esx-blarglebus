@@ -41,5 +41,24 @@ Locales['en'] = {
     ['stop_senora_park']                    = 'Senora National Park',
     ['stop_harmony']                        = 'Harmony',
 
+    ['stop_metro_station_departures']       = 'this terminal',
+    ['stop_metro_station_arrivals']         = 'the terminal',
+    ['stop_metro_vespucci_sinner']          = 'Vespucci Blvd / Sinner St',
+    ['stop_metro_popular']                  = 'Popular St',
+    ['stop_metro_hawick_meteor']            = 'Hawick Ave / Meteor St',
+    ['stop_metro_hawick_alta']              = 'Hawick Ave / Alta Pl',
+    ['stop_metro_strawberry_ave']           = 'Strawberry Ave',
+    ['stop_metro_peaceful_san_andreas']     = 'Peaceful St / San Andreas Blvd',
+    ['stop_metro_vespucci_alta']            = 'Vespucci Blvd / Alta St',
+    ['stop_metro_peaceful_vespucci']        = 'Peaceful St / Vespucci Blvd',
+    ['stop_metro_business_center']          = 'Arcadius Business Center',
+    ['stop_metro_rockford_plaza']           = 'Rockford Plaza',
+
+    ['stop_metro_carcer_way']               = 'Carcer Way',
+    ['stop_metro_rockford_eastbourne']      = 'Rockford Dr / Eastbourne Way',
+    ['stop_metro_delperro_madwayne']        = 'Del Perro Blvd / Mad Wayne Thunder Dr',
+    ['stop_metro_dorset_palomino']          = 'Dorset Dr / Palomino Ave',
+    ['stop_sanandreas_calais']              = 'San Andreas Ave / Calais Ave',
+
     ['stop_tbd'] = 'todo'
 }

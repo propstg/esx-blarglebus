@@ -246,7 +246,7 @@ function handleLoading()
 end
 
 function waitUntilPedsOnBus()
-    local stop = activeRouteLine.Stops1[stopNumber]
+    local stop = activeRouteLine.Stops[stopNumber]
 
     if #pedsAtNextStop == 0 then 
         return
