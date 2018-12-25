@@ -69,5 +69,8 @@ Locales['en'] = {
     ['stop_metro_delperro_morningwood']     = 'Del Perro Blvd / Morningwood Blvd',
     ['stop_metro_delperro_plaza']           = 'Del Perro Plaza',
     ['stop_metro_marathon_baycity']         = 'Marathon Ave / Bay City Ave',
-    ['stop_tbd'] = 'todo'
+    ['stop_metro_vespucci_elgin']           = 'Vespucci Blvd / Elgin Ave',
+    ['stop_metro_marathon_prosperity']      = 'Marathon Ave / Properity St',
+    ['stop_metro_eclipse_cougar']           = 'W Eclipse Blvd / Cougar Ave',
+    ['stop_metro_marathon']                 = 'Marathon Ave',
 }

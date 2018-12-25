@@ -62,7 +62,6 @@ Config.PedModels = {
     'a_f_y_golfer_01',
     'a_f_y_hiker_01',
     'a_f_y_hippie_01',
-    --'a_f_y_hipster_01',
     'a_f_y_hipster_02',
     'a_f_y_hipster_03',
     'a_f_y_hipster_04',
