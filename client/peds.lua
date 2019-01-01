@@ -1,4 +1,5 @@
 Peds = {}
+Peds.modelsHashUsedByPedCount = {}
 
 function Peds.CreateRandomPedInArea(coords)
     local modelName = Peds.LoadModel(Peds.RandomlySelectModel())
@@ -9,6 +10,7 @@ function Peds.CreateRandomPedInArea(coords)
     
     local ped = CreatePed(4, modelName, x, y, coords.z, heading, true, false)
     Peds.WanderInArea(ped, coords)
+    Peds.incrementModelsHashUsedByPedCount(modelName)
     return ped
 end
 
@@ -17,7 +19,7 @@ function Peds.LeaveVehicle(ped, vehicle)
         RemovePedElegantly(ped)
     else
         ClearPedTasksImmediately(ped, true)
-        TaskLeaveVehicle(ped, bus, 64)
+        TaskLeaveVehicle(ped, vehicle, 64)
     end
 end
 
@@ -75,7 +77,15 @@ function Peds.LoadModel(modelName)
     return modelName
 end
 
+function Peds.DeletePeds(pedList)
+    while #pedList > 0 do
+        Peds.DeletePed(table.remove(pedList))
+        Citizen.Wait(10)
+    end
+end
+
 function Peds.DeletePed(ped)
+    Peds.HandleUnloadingModelIfNeeded(ped)
     SetEntityAsNoLongerNeeded(ped)
     DeletePed(ped)
 end
@@ -87,5 +97,29 @@ end
 function Peds.WalkPedsToLocation(peds, coords)
     for i = 1, #peds do
         TaskGoToCoordAnyMeans(peds[i], coords.x, coords.y, coords.z, 1.0, 0, 0, 786603, 0.0);
+    end
+end
+
+function Peds.incrementModelsHashUsedByPedCount(modelName)
+    local hashKey = GetHashKey(modelName)
+
+    local value = Peds.modelsHashUsedByPedCount[hashKey]
+    if value == nil then value = 0 end
+
+    Peds.modelsHashUsedByPedCount[hashKey] = value + 1
+end
+
+function Peds.decrementModelsHashUsedByPedCount(hashKey)
+    local value = Peds.modelsHashUsedByPedCount[hashKey]
+    if value == nil then value = 1 end
+
+    Peds.modelsHashUsedByPedCount[hashKey] = value - 1
+end
+
+function Peds.HandleUnloadingModelIfNeeded(pedToDelete)
+    local hashKey = GetEntityModel(pedToDelete)
+    Peds.decrementModelsHashUsedByPedCount(hashKey)
+    if Peds.modelsHashUsedByPedCount[hashKey] <= 0 then
+        SetModelAsNoLongerNeeded(hashKey)
     end
 end

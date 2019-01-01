@@ -58,10 +58,7 @@ end)
 Citizen.CreateThread(function ()
     while true do
         if #pedsToDelete > 0 and (not isOnDuty or playerDistanceFromCoords(lastStopCoords) > Config.DeleteDistance) then
-            while #pedsToDelete > 0 do
-                Peds.DeletePed(table.remove(pedsToDelete))
-                Citizen.Wait(10)
-            end
+            Peds.DeletePeds(pedsToDelete)
         end
 
         Citizen.Wait(5000)
@@ -90,21 +87,14 @@ function handleNoLongerBusDriver()
     isOnDuty = false
     activeRoute = nil
     activeRouteLine = nil
-    deletePeds(pedsToDelete)
-    deletePeds(pedsAtNextStop)
-    deletePeds(pedsOnBus)
+    Peds.DeletePeds(pedsToDelete)
+    Peds.DeletePeds(pedsAtNextStop)
+    Peds.DeletePeds(pedsOnBus)
     Bus.DeleteBus()
-
     Markers.StopMarkers()
     Blips.StopBlips()
 end
 
-function deletePeds(peds)
-    while #peds > 0 do
-        Peds.DeletePed(table.remove(peds))
-        Citizen.Wait(10)
-    end
-end
 
 function handleSpawnPoint(locationIndex)
     local route = Config.Routes[locationIndex]
@@ -335,7 +325,6 @@ function setUpNoneStop(freeSeats)
     print ('next stop is None, randomly deciding to spawn ' .. numberOfPedsToSpawn .. 'peds')
     return numberOfPedsToSpawn, 0
 end
-
 
 function playerDistanceFromCoords(coords)
     return GetDistanceBetweenCoords(playerPosition, coords.x, coords.y, coords.z, true)
