@@ -20,6 +20,11 @@ git clone https://github.com/propstg/esx-blarglebus.git [esx]/esx-blarglebus
 start esx-blarglebus
 ```
 
+## Fuel script support
+If you use FrFuel or LegacyFuel, set the appropriate option in config.lua to true to set the bus fuel level to 100% on spawn.
+- FrFuel: Config.UseFrFuel
+- LegacyFuel: Config.UseLegacyFuel
+
 # Legal
 ### License
 esx-blarglebus - bus driver job

@@ -1,6 +1,10 @@
 Config = {}
 Config.Locale = 'en'
-Config.UseFrFuel = true
+
+-- Fuel options: These just set the initial fuel to 100%, if you're using the associated fuel script. Be sure to set any others to false.
+Config.UseLegacyFuel = false
+Config.UseFrFuel = false
+
 Config.EnterVehicleTimeout = 10000
 Config.DelayBetweenChanges = 1000
 Config.DeleteDistance = 100.0

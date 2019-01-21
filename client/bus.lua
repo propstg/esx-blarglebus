@@ -1,20 +1,32 @@
 Bus = {}
 Bus.bus = nil
+Bus.plate = nil
 
 function Bus.CreateBus(coords, model, color)
     ESX.Game.SpawnVehicle(model, coords, coords.heading, function(createdBus)
         Bus.bus = createdBus
-        SetVehicleNumberPlateText(Bus.bus, string.format('BLARG%03d', math.random(0, 999)))
+        Bus.plate = string.format('BLARG%03d', math.random(0, 999))
+        SetVehicleNumberPlateText(Bus.bus, Bus.plate)
         SetVehicleColours(Bus.bus, color, color)
         Bus.WaitForFirstEntryAndFillTankIfNeededAsync()
     end)
 end
 
 function Bus.WaitForFirstEntryAndFillTankIfNeededAsync()
-    if not Config.UseFrFuel then
-        return
+    if Config.UseLegacyFuel then
+        Bus.DoFillForLegacyFuel()
+    elseif Config.UseFrFuel then
+        Bus.DoFillForFrFuel()
     end
+end
 
+function Bus.DoFillForLegacyFuel()
+    SetVehicleFuelLevel(Bus.bus, 100.0)
+    TriggerServerEvent('LegacyFuel:UpdateServerFuelTable', Bus.plate, 100.0)
+    TriggerServerEvent('LegacyFuel:CheckServerFuelTable', Bus.plate)
+end
+
+function Bus.DoFillForFrFuel()
     Citizen.CreateThread(function()
         local maxFuel = GetVehicleHandlingFloat(Bus.bus, 'CHandlingData', 'fPetrolTankVolume')
 
