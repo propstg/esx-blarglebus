@@ -69,11 +69,11 @@ function Peds.LoadModel(modelName)
     end
 
     if loadAttempts == 10 then
-        print ('MODEL NOT LOADED AFTER TEN ATTEMPTS: ' .. modelName)
+        Log.debug('MODEL NOT LOADED AFTER TEN ATTEMPTS: ' .. modelName)
         return Peds.LoadModel(Peds.RandomlySelectModel())
     end
 
-    print ('Successfully loaded model: ' .. modelName)
+    Log.debug('Successfully loaded model: ' .. modelName)
     return modelName
 end
 

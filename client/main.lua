@@ -11,6 +11,7 @@ local activeRoute = nil
 local activeRouteLine = nil
 local stopNumber = 1
 local lastStopCoords = {}
+local totalMoneyPayedThisRoute = 0
 
 local pedsOnBus = {}
 local pedsAtNextStop = {}
@@ -84,17 +85,10 @@ function handleNowBusDriver()
 end
 
 function handleNoLongerBusDriver()
-    isOnDuty = false
-    activeRoute = nil
-    activeRouteLine = nil
-    Peds.DeletePeds(pedsToDelete)
-    Peds.DeletePeds(pedsAtNextStop)
-    Peds.DeletePeds(pedsOnBus)
-    Bus.DeleteBus()
+    immediatelyEndRoute()
     Markers.StopMarkers()
     Blips.StopBlips()
 end
-
 
 function handleSpawnPoint(locationIndex)
     local route = Config.Routes[locationIndex]
@@ -114,9 +108,12 @@ function startRoute(route)
     isRouteFinished = false
     activeRoute = Config.Routes[route]
     activeRouteLine = activeRoute.Lines[math.random(1, #activeRoute.Lines)]
+    totalMoneyPayedThisRoute = 0
     ESX.ShowNotification(_U('route_assigned', _U(activeRouteLine.Name)))
     ESX.ShowNotification(_U('drive_to_first_marker', _U(activeRouteLine.Stops[1].name)))
     Bus.CreateBus(activeRoute.SpawnPoint, activeRoute.BusModel, activeRouteLine.BusColor)
+    Blips.StartAbortBlip(activeRoute.Name, activeRoute.SpawnPoint)
+    Markers.StartAbortMarker(activeRoute.SpawnPoint)
 
     stopNumber = 0
     setUpNextStop()
@@ -128,6 +125,7 @@ function handleActiveRoute()
         handleReturningBus()
     else
         handleNormalStop()
+        handleAbortRoute()
     end
 end
 
@@ -138,12 +136,10 @@ function handleReturningBus()
         Bus.DisplayMessageAndWaitUntilBusStopped(_U('stop_bus'))
 
         TriggerServerEvent('blarglebus:finishRoute', activeRoute.Payment)
-        isOnDuty = false
-        activeRoute = nil
-        activeRouteLine = nil
-        Bus.DeleteBus()
+        immediatelyEndRoute()
 
         Markers.ResetMarkers()
+        Blips.ResetBlips()
     end
 end
 
@@ -159,9 +155,11 @@ function handleNormalStop()
         if (isLastStop(stopNumber)) then
             local coords = activeRoute.SpawnPoint
             isRouteFinished = true
+            Markers.StopAbortMarker()
             Markers.SetMarkers({coords})
-            ESX.ShowNotification(_U('return_to_terminal'))
             Blips.SetBlipAndWaypoint(activeRoute.Name, coords.x, coords.y, coords.z)
+            Blips.StopAbortBlip()
+            ESX.ShowNotification(_U('return_to_terminal'))
         else
             ESX.ShowNotification(_U('drive_to_next_marker', _U(activeRouteLine.Stops[stopNumber + 1].name)))
             setUpNextStop()
@@ -260,6 +258,7 @@ function payForEachPedLoaded(numberOfPeds)
         local amountToPay = numberOfPeds * activeRoute.PaymentPerPassenger
         TriggerServerEvent('blarglebus:passengersLoaded', amountToPay)
         ESX.ShowNotification(_U('passengers_loaded', numberOfPeds, amountToPay))
+        totalMoneyPayedThisRoute = totalMoneyPayedThisRoute + amountToPay
     end
 end
 
@@ -296,12 +295,12 @@ function isLastStop(stopNumber)
 end
 
 function setUpLastStop()
-    print ('next stop is last, all peds should depart')
+    Log.debug('next stop is last, all peds should depart')
     return 0, #pedsOnBus
 end
 
 function setUpAllStop()
-    print ('next stop is All, all peds should unload, should spawn peds equal to capacity')
+    Log.debug('next stop is All, all peds should unload, should spawn peds equal to capacity')
     return activeRoute.Capacity, #pedsOnBus
 end
 
@@ -315,15 +314,40 @@ function setUpSomeStop(freeSeats)
 
     local numberDeparting = math.random(minimumDepartingPeds, #pedsOnBus)
 
-    print ('next stop is Some, randomly decided to spawn ' .. numberOfPedsToSpawn .. ' peds and depart ' .. numberDeparting)
+    Log.debug('next stop is Some, randomly decided to spawn ' .. numberOfPedsToSpawn .. ' peds and depart ' .. numberDeparting)
     return numberOfPedsToSpawn, numberDeparting
 end
 
 function setUpNoneStop(freeSeats)
     local numberOfPedsToSpawn = math.random(1, freeSeats)
 
-    print ('next stop is None, randomly deciding to spawn ' .. numberOfPedsToSpawn .. 'peds')
+    Log.debug('next stop is None, randomly deciding to spawn ' .. numberOfPedsToSpawn .. 'peds')
     return numberOfPedsToSpawn, 0
+end
+
+function handleAbortRoute()
+    if playerDistanceFromCoords(activeRoute.SpawnPoint) < Config.Marker.Size then
+        ESX.ShowHelpNotification(_U('abort_route_help', totalMoneyPayedThisRoute))
+
+        if IsControlJustPressed(1, E_KEY) then
+            TriggerServerEvent('blarglebus:abortRoute', totalMoneyPayedThisRoute)
+
+            immediatelyEndRoute()
+            Blips.ResetBlips()
+            Blips.ResetMarkers()
+            Citizen.Wait(1000)
+        end
+    end
+end
+
+function immediatelyEndRoute()
+    isOnDuty = false
+    activeRoute = nil
+    activeRouteLine = nil
+    Peds.DeletePeds(pedsToDelete)
+    Peds.DeletePeds(pedsAtNextStop)
+    Peds.DeletePeds(pedsOnBus)
+    Bus.DeleteBus()
 end
 
 function playerDistanceFromCoords(coords)
