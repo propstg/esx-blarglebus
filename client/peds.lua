@@ -28,9 +28,9 @@ function Peds.WanderInArea(ped, stopCoords)
         stopCoords.x,
         stopCoords.y,
         stopCoords.z,
-        Config.Marker.Size / 2.0, -- radius
-        Config.Marker.Size / 2.0, -- minimalLength
-        5000                      -- timeBetweenWalks
+        Config.Markers.Size / 2.0, -- radius
+        Config.Markers.Size / 2.0, -- minimalLength
+        5000                       -- timeBetweenWalks
     )
 end
 

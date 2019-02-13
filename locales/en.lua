@@ -11,7 +11,7 @@ Locales['en'] = {
     ['passengers_loaded']                   = '~g~%d~s~ passengers paid for this stop. Collected ~g~$%d.',
     ['return_to_terminal']                  = 'Route is finished. Return to the terminal.',
     ['stop_bus']                            = 'Stop bus to return it and get paid.',
-    ['abort_route_help']                    = 'press ~INPUT_PICKUP~ to abort route. Will cost ~r~$%d.'
+    ['abort_route_help']                    = 'press ~INPUT_PICKUP~ to abort route. Will cost ~r~$%d.',
     
     ['abort_route']                         = 'Abort ~g~%s',
     ['airport_route']                       = 'Airport Shuttle Route',

@@ -18,7 +18,6 @@ ScenicRoute = {
                 {x = -2285.6760, y = 4265.5454, z = 43.7155, name = 'stop_north_chumash', unloadType = UnloadType.Some},
                 {x = -1525.0812, y = 4949.1962, z = 61.9035, name = 'stop_chiliad', unloadType = UnloadType.Some},
                 {x = -329.8910,  y = 6185.0571, z = 31.6218, name = 'stop_paleto_bay', unloadType = UnloadType.Some},
-                {x = -17.2458,   y = 6500.5517, z = 31.5728, name = 'stop_paleto_bay', unloadType = UnloadType.Some},
                 {x = 1660.6237,  y = 4857.0190, z = 41.2123, name = 'stop_grapeseed', unloadType = UnloadType.Some},
                 {x = 1962.9892,  y = 3710.2802, z = 32.2184, name = 'stop_sandy_shores', unloadType = UnloadType.Some},
                 {x = 2237.2424,  y = 3190.7673, z = 48.7102, name = 'stop_senora_park', unloadType = UnloadType.Some},

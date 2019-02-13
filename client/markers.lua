@@ -13,11 +13,16 @@ function Markers.StartMarkers()
                 Markers.DrawMarker(markerPosition, Config.Markers.StartColor)
             end
 
-            if Markers.abortMarker ~= nil do
+            if Markers.abortMarkerPosition ~= nil then
                 Markers.DrawMarker(Markers.abortMarkerPosition, Config.Markers.AbortColor)
             end
         end
     end)
+end
+
+function Markers.ResetMarkers()
+    Markers.StopMarkers()
+    Markers.InitNotOnDutyMarkers()
 end
 
 function Markers.StopMarkers()
@@ -27,11 +32,6 @@ end
 
 function Markers.SetMarkers(markersTable)
     Markers.markerPositions = markersTable
-end
-
-function Markers.ResetMarkers()
-    Markers.InitNotOnDutyMarkers()
-    Markers.StopAbortMarker()
 end
 
 function Markers.InitNotOnDutyMarkers()
