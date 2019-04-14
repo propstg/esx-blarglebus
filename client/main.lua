@@ -13,7 +13,7 @@ local activeRoute = nil
 local activeRouteLine = nil
 local stopNumber = 1
 local lastStopCoords = {}
-local totalMoneyPayedThisRoute = 0
+local totalMoneyPaidThisRoute = 0
 
 local pedsOnBus = {}
 local pedsAtNextStop = {}
@@ -142,7 +142,7 @@ function startRoute(route)
     isRouteFinished = false
     activeRoute = Config.Routes[route]
     activeRouteLine = activeRoute.Lines[math.random(1, #activeRoute.Lines)]
-    totalMoneyPayedThisRoute = 0
+    totalMoneyPaidThisRoute = 0
     ESX.ShowNotification(_U('route_assigned', _U(activeRouteLine.Name)))
     ESX.ShowNotification(_U('drive_to_first_marker', _U(activeRouteLine.Stops[1].name)))
     Bus.CreateBus(activeRoute.SpawnPoint, activeRoute.BusModel, activeRouteLine.BusColor)
@@ -299,7 +299,7 @@ function payForEachPedLoaded(numberOfPeds)
         local amountToPay = numberOfPeds * activeRoute.PaymentPerPassenger
         TriggerServerEvent('blarglebus:passengersLoaded', amountToPay)
         ESX.ShowNotification(_U('passengers_loaded', numberOfPeds, amountToPay))
-        totalMoneyPayedThisRoute = totalMoneyPayedThisRoute + amountToPay
+        totalMoneyPaidThisRoute = totalMoneyPaidThisRoute + amountToPay
     end
 end
 
@@ -368,11 +368,11 @@ end
 
 function handleAbortRoute()
     if playerDistanceFromCoords(activeRoute.SpawnPoint) < Config.Markers.Size then
-        ESX.ShowHelpNotification(_U('abort_route_help', totalMoneyPayedThisRoute))
+        ESX.ShowHelpNotification(_U('abort_route_help', totalMoneyPaidThisRoute))
 
         if IsControlJustPressed(1, E_KEY) then
             handleSettingRouteJustAbortedAsync()
-            TriggerServerEvent('blarglebus:abortRoute', totalMoneyPayedThisRoute)
+            TriggerServerEvent('blarglebus:abortRoute', totalMoneyPaidThisRoute)
 
             immediatelyEndRoute()
             Blips.ResetBlips()
