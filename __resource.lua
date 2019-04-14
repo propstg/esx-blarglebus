@@ -17,6 +17,7 @@ client_scripts {
     'config/routes/metro.lua',
     'config/routes/scenic.lua',
     'config/config.lua',
+    'client/log.lua',
     'client/bus.lua',
     'client/blips.lua',
     'client/markers.lua',

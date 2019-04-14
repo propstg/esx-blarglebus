@@ -6,23 +6,38 @@ local playerPed = nil
 local isBusDriver = false
 local isOnDuty = false
 local isRouteFinished = false
+local isRouteJustStarted = false
+local isRouteJustAborted = false
 
 local activeRoute = nil
 local activeRouteLine = nil
 local stopNumber = 1
 local lastStopCoords = {}
+local totalMoneyPaidThisRoute = 0
 
 local pedsOnBus = {}
 local pedsAtNextStop = {}
 local pedsToDelete = {}
 local numberDepartingPedsNextStop = 0
 
-Citizen.CreateThread(function ()
+Citizen.CreateThread(function()
+    waitForEsxInitialization()
+    waitForPlayerJobInitialization()
+    registerJobChangeListener()
+
+    startAbortRouteThread()
+    startPedCleanupThread()
+    startMainLoop()
+end)
+
+function waitForEsxInitialization()
     while ESX == nil do
         TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
         Citizen.Wait(0)
     end
+end
 
+function waitForPlayerJobInitialization()
     while true do
         local playerData = ESX.GetPlayerData()
         if playerData.job ~= nil then
@@ -31,12 +46,29 @@ Citizen.CreateThread(function ()
         end
         Citizen.Wait(10)
     end
+end
 
+function registerJobChangeListener()
     RegisterNetEvent('esx:setJob')
     AddEventHandler('esx:setJob', handleJobChange)
+end
 
+function startAbortRouteThread()
+    Citizen.CreateThread(function()
+        while true do
+            if isOnDuty and not isRouteFinished and not isRouteJustStarted and not isRouteJustAborted then
+                handleAbortRoute()
+                Citizen.Wait(15)
+            else
+                Citizen.Wait(1000)
+            end
+        end
+    end)
+end
+
+function startMainLoop()
     while true do
-        if isBusDriver then
+        if isBusDriver and not isRouteJustAborted then
             playerPed = PlayerPedId()
             playerPosition = GetEntityCoords(playerPed)
 
@@ -53,17 +85,19 @@ Citizen.CreateThread(function ()
             Citizen.Wait(1000)
         end
     end
-end)
+end
 
-Citizen.CreateThread(function ()
-    while true do
-        if #pedsToDelete > 0 and (not isOnDuty or playerDistanceFromCoords(lastStopCoords) > Config.DeleteDistance) then
-            Peds.DeletePeds(pedsToDelete)
+function startPedCleanupThread()
+    Citizen.CreateThread(function()
+        while true do
+            if #pedsToDelete > 0 and (not isOnDuty or playerDistanceFromCoords(lastStopCoords) > Config.DeleteDistance) then
+                Peds.DeletePeds(pedsToDelete)
+            end
+
+            Citizen.Wait(5000)
         end
-
-        Citizen.Wait(5000)
-    end
-end)
+    end)
+end
 
 function handleJobChange(job)
     local wasBusDriver = isBusDriver
@@ -84,23 +118,16 @@ function handleNowBusDriver()
 end
 
 function handleNoLongerBusDriver()
-    isOnDuty = false
-    activeRoute = nil
-    activeRouteLine = nil
-    Peds.DeletePeds(pedsToDelete)
-    Peds.DeletePeds(pedsAtNextStop)
-    Peds.DeletePeds(pedsOnBus)
-    Bus.DeleteBus()
+    immediatelyEndRoute()
     Markers.StopMarkers()
     Blips.StopBlips()
 end
-
 
 function handleSpawnPoint(locationIndex)
     local route = Config.Routes[locationIndex]
     local coords = route.SpawnPoint;
     
-    if playerDistanceFromCoords(coords) < Config.Marker.Size then
+    if playerDistanceFromCoords(coords) < Config.Markers.Size then
         ESX.ShowHelpNotification(_U('start_route', _(route.Name)))
 
         if IsControlJustPressed(1, E_KEY) then
@@ -110,17 +137,29 @@ function handleSpawnPoint(locationIndex)
 end
 
 function startRoute(route)
+    handleSettingRouteJustStartedAsync()
     isOnDuty = true
     isRouteFinished = false
     activeRoute = Config.Routes[route]
     activeRouteLine = activeRoute.Lines[math.random(1, #activeRoute.Lines)]
+    totalMoneyPaidThisRoute = 0
     ESX.ShowNotification(_U('route_assigned', _U(activeRouteLine.Name)))
     ESX.ShowNotification(_U('drive_to_first_marker', _U(activeRouteLine.Stops[1].name)))
     Bus.CreateBus(activeRoute.SpawnPoint, activeRoute.BusModel, activeRouteLine.BusColor)
+    Blips.StartAbortBlip(activeRoute.Name, activeRoute.SpawnPoint)
+    Markers.StartAbortMarker(activeRoute.SpawnPoint)
 
     stopNumber = 0
     setUpNextStop()
     stopNumber = 1
+end
+
+function handleSettingRouteJustStartedAsync()
+    isRouteJustStarted = true
+    Citizen.CreateThread(function()
+        Citizen.Wait(5000)
+        isRouteJustStarted = false
+    end)
 end
 
 function handleActiveRoute()
@@ -134,23 +173,21 @@ end
 function handleReturningBus()
     local coords = activeRoute.SpawnPoint
 
-    if playerDistanceFromCoords(coords) < Config.Marker.Size then
+    if playerDistanceFromCoords(coords) < Config.Markers.Size then
         Bus.DisplayMessageAndWaitUntilBusStopped(_U('stop_bus'))
 
         TriggerServerEvent('blarglebus:finishRoute', activeRoute.Payment)
-        isOnDuty = false
-        activeRoute = nil
-        activeRouteLine = nil
-        Bus.DeleteBus()
+        immediatelyEndRoute()
 
         Markers.ResetMarkers()
+        Blips.ResetBlips()
     end
 end
 
 function handleNormalStop()
     local currentStop = activeRouteLine.Stops[stopNumber]
 
-    if playerDistanceFromCoords(currentStop) < Config.Marker.Size then
+    if playerDistanceFromCoords(currentStop) < Config.Markers.Size then
         lastStopCoords = currentStop
         handleUnloading(currentStop)
         handleLoading()
@@ -159,9 +196,11 @@ function handleNormalStop()
         if (isLastStop(stopNumber)) then
             local coords = activeRoute.SpawnPoint
             isRouteFinished = true
+            Markers.StopAbortMarker()
             Markers.SetMarkers({coords})
-            ESX.ShowNotification(_U('return_to_terminal'))
             Blips.SetBlipAndWaypoint(activeRoute.Name, coords.x, coords.y, coords.z)
+            Blips.StopAbortBlip()
+            ESX.ShowNotification(_U('return_to_terminal'))
         else
             ESX.ShowNotification(_U('drive_to_next_marker', _U(activeRouteLine.Stops[stopNumber + 1].name)))
             setUpNextStop()
@@ -260,6 +299,7 @@ function payForEachPedLoaded(numberOfPeds)
         local amountToPay = numberOfPeds * activeRoute.PaymentPerPassenger
         TriggerServerEvent('blarglebus:passengersLoaded', amountToPay)
         ESX.ShowNotification(_U('passengers_loaded', numberOfPeds, amountToPay))
+        totalMoneyPaidThisRoute = totalMoneyPaidThisRoute + amountToPay
     end
 end
 
@@ -296,12 +336,12 @@ function isLastStop(stopNumber)
 end
 
 function setUpLastStop()
-    print ('next stop is last, all peds should depart')
+    Log.debug('next stop is last, all peds should depart')
     return 0, #pedsOnBus
 end
 
 function setUpAllStop()
-    print ('next stop is All, all peds should unload, should spawn peds equal to capacity')
+    Log.debug('next stop is All, all peds should unload, should spawn peds equal to capacity')
     return activeRoute.Capacity, #pedsOnBus
 end
 
@@ -315,15 +355,48 @@ function setUpSomeStop(freeSeats)
 
     local numberDeparting = math.random(minimumDepartingPeds, #pedsOnBus)
 
-    print ('next stop is Some, randomly decided to spawn ' .. numberOfPedsToSpawn .. ' peds and depart ' .. numberDeparting)
+    Log.debug('next stop is Some, randomly decided to spawn ' .. numberOfPedsToSpawn .. ' peds and depart ' .. numberDeparting)
     return numberOfPedsToSpawn, numberDeparting
 end
 
 function setUpNoneStop(freeSeats)
     local numberOfPedsToSpawn = math.random(1, freeSeats)
 
-    print ('next stop is None, randomly deciding to spawn ' .. numberOfPedsToSpawn .. 'peds')
+    Log.debug('next stop is None, randomly deciding to spawn ' .. numberOfPedsToSpawn .. 'peds')
     return numberOfPedsToSpawn, 0
+end
+
+function handleAbortRoute()
+    if playerDistanceFromCoords(activeRoute.SpawnPoint) < Config.Markers.Size then
+        ESX.ShowHelpNotification(_U('abort_route_help', totalMoneyPaidThisRoute))
+
+        if IsControlJustPressed(1, E_KEY) then
+            handleSettingRouteJustAbortedAsync()
+            TriggerServerEvent('blarglebus:abortRoute', totalMoneyPaidThisRoute)
+
+            immediatelyEndRoute()
+            Blips.ResetBlips()
+            Markers.ResetMarkers()
+        end
+    end
+end
+
+function handleSettingRouteJustAbortedAsync()
+    isRouteJustAborted = true
+    Citizen.CreateThread(function()
+        Citizen.Wait(5000)
+        isRouteJustAborted = false
+    end)
+end
+
+function immediatelyEndRoute()
+    isOnDuty = false
+    activeRoute = nil
+    activeRouteLine = nil
+    Peds.DeletePeds(pedsToDelete)
+    Peds.DeletePeds(pedsAtNextStop)
+    Peds.DeletePeds(pedsOnBus)
+    Bus.DeleteBus()
 end
 
 function playerDistanceFromCoords(coords)

@@ -28,9 +28,9 @@ function Peds.WanderInArea(ped, stopCoords)
         stopCoords.x,
         stopCoords.y,
         stopCoords.z,
-        Config.Marker.Size / 2.0, -- radius
-        Config.Marker.Size / 2.0, -- minimalLength
-        5000                      -- timeBetweenWalks
+        Config.Markers.Size / 2.0, -- radius
+        Config.Markers.Size / 2.0, -- minimalLength
+        5000                       -- timeBetweenWalks
     )
 end
 
@@ -69,11 +69,11 @@ function Peds.LoadModel(modelName)
     end
 
     if loadAttempts == 10 then
-        print ('MODEL NOT LOADED AFTER TEN ATTEMPTS: ' .. modelName)
+        Log.debug('MODEL NOT LOADED AFTER TEN ATTEMPTS: ' .. modelName)
         return Peds.LoadModel(Peds.RandomlySelectModel())
     end
 
-    print ('Successfully loaded model: ' .. modelName)
+    Log.debug('Successfully loaded model: ' .. modelName)
     return modelName
 end
 

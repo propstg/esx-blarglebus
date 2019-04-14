@@ -1,5 +1,6 @@
 Config = {}
 Config.Locale = 'en'
+Config.DebugLog = false
 
 -- Fuel options: These just set the initial fuel to 100%, if you're using the associated fuel script. Be sure to set any others to false.
 Config.UseLegacyFuel = false
@@ -8,8 +9,10 @@ Config.UseFrFuel = false
 Config.EnterVehicleTimeout = 10000
 Config.DelayBetweenChanges = 1000
 Config.DeleteDistance = 100.0
-Config.Marker = {
-    Size = 10.0
+Config.Markers = {
+    Size = 10.0,
+    StartColor = {r = 20, g = 200, b = 20, a = 100},
+    AbortColor = {r = 200, g = 20, b = 20, a = 100},
 }
 
 Config.Routes = {

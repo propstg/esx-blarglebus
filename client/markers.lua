@@ -1,5 +1,6 @@
 Markers = {}
 Markers.markerPositions = {}
+Markers.abortMarkerPosition = nil
 
 function Markers.StartMarkers()
     Markers.InitNotOnDutyMarkers()
@@ -9,22 +10,28 @@ function Markers.StartMarkers()
             Citizen.Wait(10)
     
             for _, markerPosition in pairs(Markers.markerPositions) do
-                Markers.DrawCircle(markerPosition)
+                Markers.DrawMarker(markerPosition, Config.Markers.StartColor)
+            end
+
+            if Markers.abortMarkerPosition ~= nil then
+                Markers.DrawMarker(Markers.abortMarkerPosition, Config.Markers.AbortColor)
             end
         end
     end)
 end
 
+function Markers.ResetMarkers()
+    Markers.StopMarkers()
+    Markers.InitNotOnDutyMarkers()
+end
+
 function Markers.StopMarkers()
     Markers.markerPositions = {}
+    Markers.StopAbortMarker()
 end
 
 function Markers.SetMarkers(markersTable)
     Markers.markerPositions = markersTable
-end
-
-function Markers.ResetMarkers()
-    Markers.InitNotOnDutyMarkers()
 end
 
 function Markers.InitNotOnDutyMarkers()
@@ -33,8 +40,16 @@ function Markers.InitNotOnDutyMarkers()
     end
 end
 
-function Markers.DrawCircle(coords)
-    local markerSize = Config.Marker.Size
+function Markers.StartAbortMarker(abortMarkerPosition)
+    Markers.abortMarkerPosition = abortMarkerPosition
+end
+
+function Markers.StopAbortMarker()
+    Markers.abortMarkerPosition = nil
+end
+
+function Markers.DrawMarker(coords, markerColor)
+    local markerSize = Config.Markers.Size
     DrawMarker(22,          -- type, MarkerTypeChevronUpx3
         coords.x,           -- posX
         coords.y,           -- posY
@@ -48,10 +63,10 @@ function Markers.DrawCircle(coords)
         markerSize / 2.0,   -- scaleX
         2.0,                -- scaleY
         10.0,               -- scaleZ
-        20,                 -- red
-        200,                -- green
-        20,                 -- blue
-        100,                -- alpha
+        markerColor.r,      -- red
+        markerColor.g,      -- green
+        markerColor.b,      -- blue
+        markerColor.a,      -- alpha
         true,               -- bobUpAndDown
         true,               -- faceCamera
         2,                  -- p19 "Typically set to 2. Does not seem to matter directly."
