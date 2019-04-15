@@ -25,6 +25,7 @@ Citizen.CreateThread(function()
     waitForPlayerJobInitialization()
     registerJobChangeListener()
 
+    Overlay.init()
     startAbortRouteThread()
     startPedCleanupThread()
     startMainLoop()
@@ -148,6 +149,8 @@ function startRoute(route)
     Bus.CreateBus(activeRoute.SpawnPoint, activeRoute.BusModel, activeRouteLine.BusColor)
     Blips.StartAbortBlip(activeRoute.Name, activeRoute.SpawnPoint)
     Markers.StartAbortMarker(activeRoute.SpawnPoint)
+    Overlay.Start()
+    updateOverlay(1)
 
     stopNumber = 0
     setUpNextStop()
@@ -193,6 +196,7 @@ function handleNormalStop()
         handleLoading()
         payForEachPedLoaded(#pedsAtNextStop)
 
+        local nextStopName = ''
         if (isLastStop(stopNumber)) then
             local coords = activeRoute.SpawnPoint
             isRouteFinished = true
@@ -201,11 +205,15 @@ function handleNormalStop()
             Blips.SetBlipAndWaypoint(activeRoute.Name, coords.x, coords.y, coords.z)
             Blips.StopAbortBlip()
             ESX.ShowNotification(_U('return_to_terminal'))
+            nextStopName = _U('terminal')
         else
-            ESX.ShowNotification(_U('drive_to_next_marker', _U(activeRouteLine.Stops[stopNumber + 1].name)))
+            nextStopName = _U(activeRouteLine.Stops[stopNumber + 1].name)
+            ESX.ShowNotification(_U('drive_to_next_marker', nextStopName))
             setUpNextStop()
             stopNumber = stopNumber + 1
         end
+
+        updateOverlay(nextStopName)
     end
 end
 
@@ -397,8 +405,13 @@ function immediatelyEndRoute()
     Peds.DeletePeds(pedsAtNextStop)
     Peds.DeletePeds(pedsOnBus)
     Bus.DeleteBus()
+    Overlay.Stop()
 end
 
 function playerDistanceFromCoords(coords)
     return GetDistanceBetweenCoords(playerPosition, coords.x, coords.y, coords.z, true)
+end
+
+function updateOverlay(nextStopName)
+    Overlay.Update(_U(activeRouteLine.Name), nextStopName, #activeRoueteLine.Stops - stopNumber, totalMoneyPaidThisRoute))
 end
