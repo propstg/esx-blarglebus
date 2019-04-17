@@ -15,6 +15,8 @@ function Overlay.Stop()
 end
 
 function Overlay.Start()
+    Overlay.Init()
+
     Overlay.isVisible = true
     Overlay.SendChangeVisibilityMessage(true)
 

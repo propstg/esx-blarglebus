@@ -23,7 +23,7 @@ class Hud {
     handleUpdate = data => {
         this.routeName.text(data.routeName);
         this.nextStop.text(data.nextStop);
-        this.moneyEarned.text(data.moneyEarned);
+        this.moneyEarned.text(`$${data.moneyEarned}`);
         this.stopsRemaining.text(data.stopsRemaining);
     };
 }

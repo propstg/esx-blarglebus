@@ -6,32 +6,36 @@
 body {
     display: none;
     overflow: hidden;
-    font-size: 3em;
+    font-size: 2em;
     font-variant: small-caps;
     font-family: Font2_cond, 'Helvetica';
-    color: white;
+    color: #bbb;
 }
 
 #container {
     position: absolute;
-    width: 275px;
+    width: 300px;
     right: 1%;
-    top: 50%;
+    top: 60%;
 }
 
 .row {
     background-color: white;
     margin-bottom: 5px;
     background-color: rgba(0, 0, 150, .6);
+    text-align: center;
+}
+
+.header {
+    color: white;
 }
 
 .label {
-    display: inline-block;
-    text-align: right;
-    margin-right: 10px;
-    width: 175px;
+    display: block;
 }
 
 .value {
+    display: block;
     font-weight: bolder;
+    color: white;
 }

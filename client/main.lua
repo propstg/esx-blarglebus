@@ -145,16 +145,18 @@ function startRoute(route)
     activeRouteLine = activeRoute.Lines[math.random(1, #activeRoute.Lines)]
     totalMoneyPaidThisRoute = 0
     ESX.ShowNotification(_U('route_assigned', _U(activeRouteLine.Name)))
-    ESX.ShowNotification(_U('drive_to_first_marker', _U(activeRouteLine.Stops[1].name)))
     Bus.CreateBus(activeRoute.SpawnPoint, activeRoute.BusModel, activeRouteLine.BusColor)
     Blips.StartAbortBlip(activeRoute.Name, activeRoute.SpawnPoint)
     Markers.StartAbortMarker(activeRoute.SpawnPoint)
     Overlay.Start()
-    updateOverlay(1)
 
     stopNumber = 0
     setUpNextStop()
     stopNumber = 1
+
+    local firstStopName = _U(activeRouteLine.Stops[1].name)
+    ESX.ShowNotification(_U('drive_to_first_marker', firstStopName))
+    updateOverlay(firstStopName)
 end
 
 function handleSettingRouteJustStartedAsync()
