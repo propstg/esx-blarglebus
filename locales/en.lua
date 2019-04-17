@@ -12,7 +12,11 @@ Locales['en'] = {
     ['return_to_terminal']                  = 'Route is finished. Return to the terminal.',
     ['stop_bus']                            = 'Stop bus to return it and get paid.',
     ['abort_route_help']                    = 'press ~INPUT_PICKUP~ to abort route. Will cost ~r~$%d.',
-    
+
+    ['next_stop_label']                     = 'Next Stop',
+    ['money_earned_label']                  = 'Money Earned',
+    ['stops_remaining_label']               = 'Stops Remaining',
+
     ['abort_route']                         = 'Abort ~g~%s',
     ['airport_route']                       = 'Airport Shuttle Route',
     ['scenic_route']                        = 'Scenic Route',
@@ -23,6 +27,7 @@ Locales['en'] = {
     ['metro_purple']                        = 'Metro Purple Line',
     ['metro_orange']                        = 'Metro Downtown East',
     ['metro_black']                         = 'Metro Downtown West',
+    ['terminal']                            = 'Terminal',
 
     ['stop_banner_hotel']                   = 'Banner Hotel & Spa',
     ['stop_von_crastenburg']                = 'Von Crastenburg',

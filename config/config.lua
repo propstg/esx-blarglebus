@@ -15,6 +15,8 @@ Config.Markers = {
     AbortColor = {r = 200, g = 20, b = 20, a = 100},
 }
 
+Config.ShowOverlay = true
+
 Config.Routes = {
     AirportRoute,
     ScenicRoute,
