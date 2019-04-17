@@ -20,11 +20,11 @@ class Hud {
 
     changeVisibility = isVisible => document.body.style.display = isVisible ? 'block' : 'none';
 
-    handleTick = data => {
-        this.level.text(data.level);
-        this.timeLeft.text(data.timeLeft);
-        this.emptySeats.text(data.emptySeats);
-        this.patientsLeft.text(data.patientsLeft);
+    handleUpdate = data => {
+        this.routeName.text(data.routeName);
+        this.nextStop.text(data.nextStop);
+        this.moneyEarned.text(data.moneyEarned);
+        this.stopsRemaining.text(data.stopsRemaining);
     };
 }
 

@@ -25,7 +25,7 @@ Citizen.CreateThread(function()
     waitForPlayerJobInitialization()
     registerJobChangeListener()
 
-    Overlay.init()
+    Overlay.Init()
     startAbortRouteThread()
     startPedCleanupThread()
     startMainLoop()
@@ -413,5 +413,5 @@ function playerDistanceFromCoords(coords)
 end
 
 function updateOverlay(nextStopName)
-    Overlay.Update(_U(activeRouteLine.Name), nextStopName, #activeRoueteLine.Stops - stopNumber, totalMoneyPaidThisRoute))
+    Overlay.Update(_U(activeRouteLine.Name), nextStopName, #activeRouteLine.Stops - stopNumber, totalMoneyPaidThisRoute)
 end
