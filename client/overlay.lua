@@ -2,6 +2,14 @@ Overlay = {}
 Overlay.isVisible = false
 Overlay.wasPaused = false
 
+if not Config.ShowOverlay then
+    function Overlay.Init() end
+    function Overlay.Stop() end
+    function Overlay.Start() end
+    function Overlay.Update() end
+    return
+end
+
 function Overlay.Init()
     Overlay.SendMessage({
         type = 'init',
