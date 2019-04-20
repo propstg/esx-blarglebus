@@ -1,6 +1,6 @@
 Config = {}
 Config.Locale = 'en'
-Config.DebugLog = false
+Config.DebugLog = true
 
 -- Fuel options: These just set the initial fuel to 100%, if you're using the associated fuel script. Be sure to set any others to false.
 Config.UseLegacyFuel = false

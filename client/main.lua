@@ -28,6 +28,7 @@ Citizen.CreateThread(function()
     Overlay.Init()
     startAbortRouteThread()
     startPedCleanupThread()
+    startLoggerLoop()
     startMainLoop()
 end)
 
@@ -65,6 +66,38 @@ function startAbortRouteThread()
             end
         end
     end)
+end
+
+function startLoggerLoop()
+    if Config.DebugLog then
+        Citizen.CreateThread(function()
+            while true do
+                Citizen.Wait(10000)
+                Log.debug('--------------------------------------------------')
+                Log.debug('startLoggerLoop isBusDriver: ' .. tostring(isBusDriver))
+                Log.debug('startLoggerLoop isOnDuty: ' .. tostring(isRouteJustAborted))
+                Log.debug('startLoggerLoop isRouteFinished: ' .. tostring(isRouteFinished))
+                Log.debug('startLoggerLoop isRouteJustStarted: ' .. tostring(isRouteJustStarted))
+                Log.debug('startLoggerLoop isRouteJustAborted: ' .. tostring(isRouteJustAborted))
+                Log.debug('startLoggerLoop stopNumber: ' .. stopNumber)
+                Log.debug('startLoggerLoop #pedsOnBus: ' .. #pedsOnBus)
+                Log.debug('startLoggerLoop #pedsAtNextStop: ' .. #pedsAtNextStop)
+                Log.debug(string.format('startLoggerLoop playerPosition: %.3f, %.3f, %.3f', playerPosition.x, playerPosition.y, playerPosition.z))
+
+                if activeRouteLine ~= nil then
+                    local currentStop = activeRouteLine.Stops[stopNumber]
+                    local distanceFromStop = playerDistanceFromCoords(currentStop)
+                    Log.debug(string.format('startLoggerLoop currentStop: %.3f, %.3f, %.3f', currentStop.x, currentStop.y, currentStop.z))
+                    Log.debug('startLoggerLoop Distance from stop: ' .. distanceFromStop)
+                    Log.debug(string.format('startLoggerLoop distance < required distance (%f): %s', distanceFromStop, tostring(distanceFromStop < Config.Markers.Size)))
+                else
+                    Log.debug('startLoggerLoop activeRouteLine is nil')
+                end
+
+                Log.debug('--------------------------------------------------')
+            end
+        end)
+    end
 end
 
 function startMainLoop()
@@ -138,6 +171,7 @@ function handleSpawnPoint(locationIndex)
 end
 
 function startRoute(route)
+    Log.debug('Begin startRoute')
     handleSettingRouteJustStartedAsync()
     isOnDuty = true
     isRouteFinished = false
@@ -157,6 +191,8 @@ function startRoute(route)
     local firstStopName = _U(activeRouteLine.Stops[1].name)
     ESX.ShowNotification(_U('drive_to_first_marker', firstStopName))
     updateOverlay(firstStopName)
+
+    Log.debug('End startRoute')
 end
 
 function handleSettingRouteJustStartedAsync()
@@ -193,10 +229,15 @@ function handleNormalStop()
     local currentStop = activeRouteLine.Stops[stopNumber]
 
     if playerDistanceFromCoords(currentStop) < Config.Markers.Size then
+        Log.debug('handleNormalStop... bus is in range of stop')
         lastStopCoords = currentStop
+        Log.debug('handleNormalStop... calling handleUnloading...')
         handleUnloading(currentStop)
+        Log.debug('handleNormalStop... handleUnloading finished. calling handleLoading...')
         handleLoading()
+        Log.debug('handleNormalStop... handleLoading finished. calling payForEachPedLoaded...')
         payForEachPedLoaded(#pedsAtNextStop)
+        Log.debug('handleNormalStop... payForEachPedLoaded finished. starting next stop determination...')
 
         local nextStopName = ''
         if (isLastStop(stopNumber)) then
@@ -216,13 +257,17 @@ function handleNormalStop()
         end
 
         updateOverlay(nextStopName)
+        Log.debug('end handleNormalStop')
     end
 end
 
 function handleUnloading(stopCoords)
+    Log.debug('begin handleUnloading')
+
     Bus.DisplayMessageAndWaitUntilBusStopped(determineWaitForPassengersMessage())
     Bus.OpenDoorsAndActivateHazards(activeRoute.Doors)
 
+    Log.debug('handleUnloading instructing peds to leave bus')
     local departingPeds = {}
     for i = 1, numberDepartingPedsNextStop do
         local ped = table.remove(pedsOnBus)
@@ -231,9 +276,13 @@ function handleUnloading(stopCoords)
         Peds.LeaveVehicle(ped, Bus.bus)
     end
 
+    Log.debug('handleUnloading waiting until all peds are off bus...')
     waitUntilPedsOffBus(departingPeds)
 
+    Log.debug('handleUnloading instructing peds to walk to stop coords...')
     Peds.WalkPedsToLocation(departingPeds, stopCoords)
+
+    Log.debug('end handleUnloading')
 end
 
 function determineWaitForPassengersMessage()
@@ -268,6 +317,7 @@ function waitUntilPedsOffBus(departingPeds)
 end
 
 function handleLoading()
+    Log.debug('begin handleLoading')
     Citizen.Wait(Config.DelayBetweenChanges)
 
     if #pedsAtNextStop == 0 then
@@ -276,13 +326,17 @@ function handleLoading()
 
     local freeSeats = Bus.FindFreeSeats(activeRoute.FirstSeat, activeRoute.Capacity)
 
+    Log.debug('handleLoading instructing all peds to board bus...')
     for i = 1, #pedsAtNextStop do
         Peds.EnterVehicle(pedsAtNextStop[i], Bus.bus, freeSeats[i])
         table.insert(pedsOnBus, pedsAtNextStop[i])
     end
 
+    Log.debug('handleLoading waiting until all peds are on bus...')
     waitUntilPedsOnBus()
     Bus.CloseDoorsAndDeactivateHazards()
+
+    Log.debug('end handleLoading')
 end
 
 function waitUntilPedsOnBus()
@@ -314,6 +368,7 @@ function payForEachPedLoaded(numberOfPeds)
 end
 
 function setUpNextStop()
+    Log.debug('Begin setUpNextStop')
     local nextStop = activeRouteLine.Stops[stopNumber + 1]
     local numberOfPedsToSpawn = 0
     local freeSeats = activeRoute.Capacity - #pedsOnBus
@@ -331,14 +386,17 @@ function setUpNextStop()
     end
 
     Citizen.CreateThread(function()
+        Log.debug('Begin setUpNextStop ped creation')
         for i = 1, numberOfPedsToSpawn do
             table.insert(pedsAtNextStop, Peds.CreateRandomPedInArea(nextStop))
             Citizen.Wait(100)
         end
+        Log.debug('End setUpNextStop ped creation')
     end)
     
     Markers.SetMarkers({nextStop})
     Blips.SetBlipAndWaypoint(activeRoute.Name, nextStop.x, nextStop.y, nextStop.z)
+    Log.debug('End setUpNextStop')
 end
 
 function isLastStop(stopNumber)
