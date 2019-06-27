@@ -28,6 +28,23 @@ function Bus.WaitForFirstEntryAndFillTankIfNeededAsync()
 end
 
 function Bus.DoFillForLegacyFuel()
+    wasCallSuccessful, err = pcall(Bus.DoFillForLegacyFuelNewStyle)
+
+    if not wasCallSuccessful then
+        Log.debug('Error calling exports['..Config.LegacyFuelFolderName..']:SetFuel.')
+        Log.debug('Error was: ' .. err)
+        Log.debug('If you have an older version of LegacyFuel, or if your bus is spawning with full fuel, this is probably safe to ignore.')
+        Log.debug('You may want to update LegacyFuel or check that Config.LegacyFuelFolderName is correct.')
+        Log.debug('Attempting to set fuel using old style...')
+        Bus.DoFillForLegacyFuelOldStyle()
+    end
+end
+
+function Bus.DoFillForLegacyFuelNewStyle()
+    exports[Config.LegacyFuelFolderName]:SetFuel(Bus.bus, 100)
+end
+
+function Bus.DoFillForLegacyFuelOldStyle()
     SetVehicleFuelLevel(Bus.bus, 100.0)
     TriggerServerEvent('LegacyFuel:UpdateServerFuelTable', Bus.plate, 100.0)
     TriggerServerEvent('LegacyFuel:CheckServerFuelTable', Bus.plate)
