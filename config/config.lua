@@ -6,6 +6,8 @@ Config.DebugLog = false
 Config.UseLegacyFuel = false
 Config.UseFrFuel = false
 
+Config.PutPlayerInBusOnSpawn = false
+
 Config.EnterVehicleTimeout = 10000
 Config.DelayBetweenChanges = 1000
 Config.DeleteDistance = 100.0
