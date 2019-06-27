@@ -3,8 +3,12 @@ Config.Locale = 'en'
 Config.DebugLog = false
 
 -- Fuel options: These just set the initial fuel to 100%, if you're using the associated fuel script. Be sure to set any others to false.
+-- Note:  If using newer versions of LegacyFuel, make sure LegacyFuelFolderName matches the name of the LegacyFuel resource folder, in case you renamed it.
 Config.UseLegacyFuel = false
+Config.LegacyFuelFolderName = 'LegacyFuel'
 Config.UseFrFuel = false
+
+Config.PutPlayerInBusOnSpawn = false
 
 Config.EnterVehicleTimeout = 10000
 Config.DelayBetweenChanges = 1000
