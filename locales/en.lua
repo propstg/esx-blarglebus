@@ -12,6 +12,7 @@ Locales['en'] = {
     ['return_to_terminal']                  = 'Route is finished. Return to the terminal.',
     ['stop_bus']                            = 'Stop bus to return it and get paid.',
     ['abort_route_help']                    = 'press ~INPUT_PICKUP~ to abort route. Will cost ~r~$%d.',
+    ['get_back_in_bus']                     = 'Get back in the bus to continue route.',
 
     ['next_stop_label']                     = 'Next Stop',
     ['money_earned_label']                  = 'Money Earned',

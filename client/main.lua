@@ -78,6 +78,9 @@ function startMainLoop()
                     handleSpawnPoint(i)
                 end
                 Citizen.Wait(5)
+            elseif isPlayerNotInBus() then
+                ESX.ShowHelpNotification(_('get_back_in_bus'))
+                Citizen.Wait(5)
             else
                 handleActiveRoute()
                 Citizen.Wait(100)
@@ -86,6 +89,11 @@ function startMainLoop()
             Citizen.Wait(1000)
         end
     end
+end
+
+function isPlayerNotInBus()
+    local vehiclePlayerIsIn = GetVehiclePedIsIn(playerPed, false)
+    return vehiclePlayerIsIn ~= Bus.bus
 end
 
 function startPedCleanupThread()
