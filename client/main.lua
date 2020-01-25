@@ -184,7 +184,7 @@ function handleActiveRoute()
 end
 
 function handleReturningBus()
-    local coords = activeRoute.SpawnPoint
+    local coords = activeRoute.BusReturnPoint or activeRoute.SpawnPoint
 
     if playerDistanceFromCoords(coords) < Config.Markers.Size then
         Bus.DisplayMessageAndWaitUntilBusStopped(_U('stop_bus'))
@@ -208,7 +208,7 @@ function handleNormalStop()
 
         local nextStopName = ''
         if (isLastStop(stopNumber)) then
-            local coords = activeRoute.SpawnPoint
+            local coords = activeRoute.BusReturnPoint or activeRoute.SpawnPoint
             isRouteFinished = true
             Markers.StopAbortMarker()
             Markers.SetMarkers({coords})
