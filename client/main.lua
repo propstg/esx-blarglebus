@@ -146,11 +146,16 @@ function handleSpawnPoint(locationIndex)
 end
 
 function startRoute(route)
+    activeRouteLine = selectStartingLine(Config.Routes[route])
+    if activeRouteLine == nil then
+        ESX.ShowNotification(_U('route_selection_cancel'))
+        return
+    end
+
     handleSettingRouteJustStartedAsync()
     isOnDuty = true
     isRouteFinished = false
     activeRoute = Config.Routes[route]
-    activeRouteLine = activeRoute.Lines[math.random(1, #activeRoute.Lines)]
     totalMoneyPaidThisRoute = 0
     ESX.ShowNotification(_U('route_assigned', _U(activeRouteLine.Name)))
     Bus.CreateBus(activeRoute.SpawnPoint, activeRoute.BusModel, activeRouteLine.BusColor)
@@ -165,6 +170,50 @@ function startRoute(route)
     local firstStopName = _U(activeRouteLine.Stops[1].name)
     ESX.ShowNotification(_U('drive_to_first_marker', firstStopName))
     updateOverlay(firstStopName)
+end
+
+function selectStartingLine(selectedRoute)
+    if #selectedRoute.Lines == 1 then
+        return selectedRoute.Lines[1]
+    end
+
+    return handleMultiLineRouteSelection(selectedRoute)
+end
+
+function handleMultiLineRouteSelection(selectedRoute)
+    local selectedIndex = nil
+
+    ESX.UI.Menu.Open('default', GetCurrentResourceName(), 'line_selector', {
+        title = _U('route_selection_title', _U(selectedRoute.Name)),
+        align = 'top-left', 
+        elements = buildStartingLineMenuElements(selectedRoute)
+    }, function (data, menu)
+        menu.close()
+        selectedIndex = data.current.value
+    end, function (data, menu)
+        menu.close()
+        selectedIndex = -1
+    end)
+
+    while selectedIndex == nil do
+       Citizen.Wait(1) 
+    end
+
+    if selectedIndex == -1 then
+        return nil
+    elseif selectedIndex == 0 then
+        return selectedRoute.Lines[math.random(1, #selectedRoute.Lines)]
+    end
+
+    return selectedRoute.Lines[selectedIndex]
+end
+
+function buildStartingLineMenuElements(selectedRoute)
+    local elements = {{label = _U('route_selection_random'), value = 0}}
+    for i = 1, #selectedRoute.Lines do
+        table.insert(elements, {label = _U(selectedRoute.Lines[i].Name), value = i})
+    end
+    return elements
 end
 
 function handleSettingRouteJustStartedAsync()
