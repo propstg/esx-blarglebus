@@ -29,7 +29,7 @@ If you use FrFuel or LegacyFuel, set the appropriate option in config.lua to tru
 ### License
 esx-blarglebus - bus driver job
 
-Copyright (C) 2018 Gregory Propst
+Copyright (C) 2019 Gregory Propst
 
 This program Is free software: you can redistribute it And/Or modify it under the terms Of the GNU General Public License As published by the Free Software Foundation, either version 3 Of the License, Or (at your option) any later version.
 

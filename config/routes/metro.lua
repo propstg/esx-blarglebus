@@ -38,6 +38,7 @@ MetroRoute = {
     Doors = {0, 1, 2, 3},
     FirstSeat = 1,
     SpawnPoint = {x = 303.1034, y = -1208.9884, z = 29.4169, heading = 356.02},
+    BusReturnPoint = {x = 303.1034, y = -1208.9884, z = 29.4169, heading = 356.02},
     Payment = 5000,
     PaymentPerPassenger = 5,
     Lines = {
