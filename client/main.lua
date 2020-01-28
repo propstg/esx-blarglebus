@@ -11,6 +11,7 @@ local isRouteJustAborted = false
 
 local activeRoute = nil
 local activeRouteLine = nil
+local busType = nil
 local stopNumber = 1
 local lastStopCoords = {}
 local totalMoneyPaidThisRoute = 0
@@ -156,9 +157,10 @@ function startRoute(route)
     isOnDuty = true
     isRouteFinished = false
     activeRoute = Config.Routes[route]
+    busType = getBusType(activeRoute, activeRouteLine)
     totalMoneyPaidThisRoute = 0
     ESX.ShowNotification(_U('route_assigned', _U(activeRouteLine.Name)))
-    Bus.CreateBus(activeRoute.SpawnPoint, activeRoute.BusModel, activeRouteLine.BusColor)
+    Bus.CreateBus(activeRoute.SpawnPoint, busType.BusModel, activeRouteLine.BusColor)
     Blips.StartAbortBlip(activeRoute.Name, activeRoute.SpawnPoint)
     Markers.StartAbortMarker(activeRoute.SpawnPoint)
     Overlay.Start()
@@ -216,6 +218,19 @@ function buildStartingLineMenuElements(selectedRoute)
     return elements
 end
 
+function getBusType(route, line)
+    return line.BusOverride or route.Bus or getBackwardsCompatibleBusType(route)
+end
+
+function getBackwardsCompatibleBusType(route)
+    return {
+        BusModel = route.BusModel,
+        Capacity = route.Capacity,
+        Doors = route.Doors,
+        FirstSeat = route.FirstSeat
+    }
+end
+
 function handleSettingRouteJustStartedAsync()
     isRouteJustStarted = true
     Citizen.CreateThread(function()
@@ -233,7 +248,7 @@ function handleActiveRoute()
 end
 
 function handleReturningBus()
-    local coords = activeRoute.BusReturnPoint or activeRoute.SpawnPoint
+    local coords = getReturnPointCoords(activeRoute, activeRouteLine)
 
     if playerDistanceFromCoords(coords) < Config.Markers.Size then
         Bus.DisplayMessageAndWaitUntilBusStopped(_U('stop_bus'))
@@ -257,7 +272,7 @@ function handleNormalStop()
 
         local nextStopName = ''
         if (isLastStop(stopNumber)) then
-            local coords = activeRoute.BusReturnPoint or activeRoute.SpawnPoint
+            local coords = getReturnPointCoords(activeRoute, activeRouteLine)
             isRouteFinished = true
             Markers.StopAbortMarker()
             Markers.SetMarkers({coords})
@@ -276,9 +291,13 @@ function handleNormalStop()
     end
 end
 
+function getReturnPointCoords(route, line)
+    return line.BusReturnPointOverride or activeRoute.BusReturnPoint or activeRoute.SpawnPoint
+end
+
 function handleUnloading(stopCoords)
     Bus.DisplayMessageAndWaitUntilBusStopped(determineWaitForPassengersMessage())
-    Bus.OpenDoorsAndActivateHazards(activeRoute.Doors)
+    Bus.OpenDoorsAndActivateHazards(busType.Doors)
 
     local departingPeds = {}
     for i = 1, numberDepartingPedsNextStop do
@@ -331,7 +350,7 @@ function handleLoading()
         return Bus.CloseDoorsAndDeactivateHazards()
     end
 
-    local freeSeats = Bus.FindFreeSeats(activeRoute.FirstSeat, activeRoute.Capacity)
+    local freeSeats = Bus.FindFreeSeats(busType.FirstSeat, busType.Capacity)
 
     for i = 1, #pedsAtNextStop do
         Peds.EnterVehicle(pedsAtNextStop[i], Bus.bus, freeSeats[i])
@@ -373,7 +392,7 @@ end
 function setUpNextStop()
     local nextStop = activeRouteLine.Stops[stopNumber + 1]
     local numberOfPedsToSpawn = 0
-    local freeSeats = activeRoute.Capacity - #pedsOnBus
+    local freeSeats = busType.Capacity - #pedsOnBus
     
     pedsAtNextStop = {}
 
@@ -409,11 +428,11 @@ end
 
 function setUpAllStop()
     Log.debug('next stop is All, all peds should unload, should spawn peds equal to capacity')
-    return activeRoute.Capacity, #pedsOnBus
+    return busType.Capacity, #pedsOnBus
 end
 
 function setUpSomeStop(freeSeats)
-    local numberOfPedsToSpawn = math.random(1, activeRoute.Capacity)
+    local numberOfPedsToSpawn = math.random(1, busType.Capacity)
     local minimumDepartingPeds = 1
 
     if numberOfPedsToSpawn > freeSeats then

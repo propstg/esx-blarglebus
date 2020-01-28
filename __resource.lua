@@ -15,6 +15,7 @@ client_scripts {
     '@es_extended/locale.lua',
     'locales/en.lua',
     'config/unloadType.lua',
+    'config/busType.lua',
     'config/routes/airport.lua',
     'config/routes/metro.lua',
     'config/routes/scenic.lua',
