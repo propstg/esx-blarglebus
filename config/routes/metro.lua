@@ -31,12 +31,10 @@ MetroStops = {
     [49] = {x = 187.6606, y = -187.2898, z = 54.0936, unloadType = UnloadType.Some, name = 'stop_metro_hawick_alta'},
 }
 
+
 MetroRoute = {
     Name = 'metro_route',
-    BusModel = 'bus',
-    Capacity = 15,
-    Doors = {0, 1, 2, 3},
-    FirstSeat = 1,
+    Bus = BusType.CityBus,
     SpawnPoint = {x = 303.1034, y = -1208.9884, z = 29.4169, heading = 356.02},
     BusReturnPoint = {x = 303.1034, y = -1208.9884, z = 29.4169, heading = 356.02},
     Payment = 5000,
