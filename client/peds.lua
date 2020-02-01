@@ -7,8 +7,8 @@ function Peds.CreateRandomPedInArea(coords)
     local x = coords.x + math.random() * 4 - 2
     local y = coords.y + math.random() * 4 - 2
     local heading = math.random() * 360
-    
-    local ped = CreatePed(4, modelName, x, y, coords.z, heading, true, false)
+
+    local ped = CreatePed(4, modelName, x, y, coords.z, heading, true == Config.OnlyShowPedsOnClient, false)
     Peds.WanderInArea(ped, coords)
     Peds.incrementModelsHashUsedByPedCount(modelName)
     return ped

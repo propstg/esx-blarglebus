@@ -9,6 +9,7 @@ Config.LegacyFuelFolderName = 'LegacyFuel'
 Config.UseFrFuel = false
 
 Config.PutPlayerInBusOnSpawn = false
+Config.OnlyShowPedsOnClient = true
 
 Config.EnterVehicleTimeout = 10000
 Config.DelayBetweenChanges = 1000
