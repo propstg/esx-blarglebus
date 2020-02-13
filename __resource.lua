@@ -26,6 +26,7 @@ client_scripts {
     'client/markers.lua',
     'client/peds.lua',
     'client/overlay.lua',
+    'client/events.lua',
     'client/main.lua'
 }
 
