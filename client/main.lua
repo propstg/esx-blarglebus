@@ -160,6 +160,7 @@ function startRoute(route)
     busType = getBusType(activeRoute, activeRouteLine)
     totalMoneyPaidThisRoute = 0
     ESX.ShowNotification(_U('route_assigned', _U(activeRouteLine.Name)))
+    Events.RouteStarted(activeRouteLine.Name)
     Bus.CreateBus(activeRoute.SpawnPoint, busType.BusModel, activeRouteLine.BusColor)
     Blips.StartAbortBlip(activeRoute.Name, activeRoute.SpawnPoint)
     Markers.StartAbortMarker(activeRoute.SpawnPoint)
@@ -254,6 +255,7 @@ function handleReturningBus()
         Bus.DisplayMessageAndWaitUntilBusStopped(_U('stop_bus'))
 
         TriggerServerEvent('blarglebus:finishRoute', activeRoute.Payment)
+        Events.RouteEnded()
         immediatelyEndRoute()
 
         Markers.ResetMarkers()
@@ -263,14 +265,17 @@ end
 
 function handleNormalStop()
     local currentStop = activeRouteLine.Stops[stopNumber]
+    local currentStopNameKey = activeRouteLine.Stops[stopNumber].name
 
     if playerDistanceFromCoords(currentStop) < Config.Markers.Size then
+        local nextStopNameKey = determineNextStopName()
         lastStopCoords = currentStop
+        Events.ArrivedAtStop(currentStopNameKey, nextStopNameKey)
         handleUnloading(currentStop)
         handleLoading()
         payForEachPedLoaded(#pedsAtNextStop)
 
-        local nextStopName = ''
+        local nextStopName = _U(nextStopNameKey)
         if (isLastStop(stopNumber)) then
             local coords = getReturnPointCoords(activeRoute, activeRouteLine)
             isRouteFinished = true
@@ -279,16 +284,23 @@ function handleNormalStop()
             Blips.SetBlipAndWaypoint(activeRoute.Name, coords.x, coords.y, coords.z)
             Blips.StopAbortBlip()
             ESX.ShowNotification(_U('return_to_terminal'))
-            nextStopName = _U('terminal')
         else
-            nextStopName = _U(activeRouteLine.Stops[stopNumber + 1].name)
             ESX.ShowNotification(_U('drive_to_next_marker', nextStopName))
             setUpNextStop()
             stopNumber = stopNumber + 1
         end
 
+        Events.DepartingStop(currentStopNameKey, nextStopNameKey)
         updateOverlay(nextStopName)
     end
+end
+
+function determineNextStopName()
+    if (isLastStop(stopNumber)) then
+        return 'terminal'
+    end
+
+    return activeRouteLine.Stops[stopNumber + 1].name
 end
 
 function getReturnPointCoords(route, line)
