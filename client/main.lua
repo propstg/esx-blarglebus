@@ -1,25 +1,8 @@
 local E_KEY = 38
-
-local playerPosition = nil
-local playerPed = nil
-
-local isBusDriver = false
-local isOnDuty = false
-local isRouteFinished = false
-local isRouteJustStarted = false
-local isRouteJustAborted = false
-
-local activeRoute = nil
-local activeRouteLine = nil
-local busType = nil
-local stopNumber = 1
-local lastStopCoords = {}
-local totalMoneyPaidThisRoute = 0
-
-local pedsOnBus = {}
-local pedsAtNextStop = {}
-local pedsToDelete = {}
-local numberDepartingPedsNextStop = 0
+local isBusDriver, isOnDuty, isRouteFinished, isRouteJustStarted, isRouteJustAborted = false, false, false, false , false
+local activeRoute, activeRouteLine, busType, playerPosition, playerPed
+local stopNumber, totalMoneyPaidThisRoute, numberDepartingPedsNextStop  = 1,0,0
+local lastStopCoords, pedsOnBus, pedsAtNextStop, pedsToDelete = {},{},{},{}
 
 Citizen.CreateThread(function()
     waitForEsxInitialization()
