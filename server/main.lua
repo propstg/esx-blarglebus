@@ -7,10 +7,10 @@ AddEventHandler('blarglebus:finishRoute', function(amount)
     local xPlayer = ESX.GetPlayerFromId(source)
     
     if xPlayer.job.name == 'busdriver' then
-    ESX.GetPlayerFromId(source).addMoney(amount)
+    xPlayer.addMoney(amount)
     else
-        print(('blarglebus: %s attempted to exploit the job!'):format(xPlayer.identifier))
-	xPlayer.kick("You are kicked because of cheat!")
+        print(_U('exploit_attempted_log_message', xPlayer.identifier))
+        xPlayer.kick(_U('exploit_attempted_kick_message'))
      end
 end)
 
