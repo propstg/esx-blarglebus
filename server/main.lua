@@ -4,22 +4,27 @@ TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 
 RegisterNetEvent('blarglebus:finishRoute')
 AddEventHandler('blarglebus:finishRoute', function(amount)
-    local xPlayer = ESX.GetPlayerFromId(source)
-    
-    if xPlayer.job.name == 'busdriver' then
-    xPlayer.addMoney(amount)
-    else
-        print(_U('exploit_attempted_log_message', xPlayer.identifier))
-        xPlayer.kick(_U('exploit_attempted_kick_message'))
-     end
+    updateMoney(source, function(player) player.addMoney(amount) end)
 end)
 
 RegisterNetEvent('blarglebus:passengersLoaded')
 AddEventHandler('blarglebus:passengersLoaded', function(amount)
-    ESX.GetPlayerFromId(source).addMoney(amount)
+    updateMoney(source, function(player) player.addMoney(amount) end)
 end)
 
 RegisterNetEvent('blarglebus:abortRoute')
 AddEventHandler('blarglebus:abortRoute', function(amount)
-    ESX.GetPlayerFromId(source).removeMoney(amount)
+    updateMoney(source, function(player) player.removeMoney(amount) end)
 end)
+
+function updateMoney(_source, updateMoneyCallback)
+    local player = ESX.GetPlayerFromId(_source)
+    
+    if player.job.name ~= 'busdriver' then
+        print(_('exploit_attempted_log_message', player.identifier))
+        player.kick(_U('exploit_attempted_kick_message'))
+        return
+    end
+
+    updateMoneyCallback(player)
+end

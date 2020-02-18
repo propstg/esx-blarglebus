@@ -22,6 +22,9 @@ Locales['en'] = {
     ['money_earned_label']                  = 'Money Earned',
     ['stops_remaining_label']               = 'Stops Remaining',
 
+    ['exploit_attempted_kick_message']      = 'You are kicked because of cheat!',
+    ['exploit_attempted_log_message']       = 'blarglebus: %s attempted exploiting! (reason: called server functions when job not set to busdriver)',
+
     ['abort_route']                         = 'Abort ~g~%s',
     ['airport_route']                       = 'Airport Shuttle Route',
     ['scenic_route']                        = 'Scenic Route',
@@ -86,7 +89,4 @@ Locales['en'] = {
     ['stop_metro_eclipse_cougar']           = 'W Eclipse Blvd / Cougar Ave',
     ['stop_metro_marathon']                 = 'Marathon Ave',
 
-   --Kick message
-   ['exploit_attempted_kick_message']       = 'You are kicked because of cheat!',
-   ['exploit_attempted_log_message']        = 'blarglebus: %s attempted to exploit the job!',
 }
