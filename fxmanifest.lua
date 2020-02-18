@@ -1,12 +1,15 @@
 fx_version 'adamant'
-
 game 'gta5'
 
+name 'esx-blarglebus'
 description 'Blarglebottoms Bus Route'
 
-server_scripts {
+shared_scripts {
     '@es_extended/locale.lua',
-    'locales/en.lua',
+    'locales/*.lua',
+}
+
+server_scripts {
     'config/config.lua',
     'server/main.lua'
 }
@@ -14,28 +17,15 @@ server_scripts {
 ui_page 'html/index.html'
 
 client_scripts {
-    '@es_extended/locale.lua',
-    'locales/en.lua',
     'config/unloadType.lua',
     'config/busType.lua',
-    'config/routes/airport.lua',
-    'config/routes/metro.lua',
-    'config/routes/scenic.lua',
+    'config/routes/*.lua',
     'config/config.lua',
-    'client/log.lua',
-    'client/bus.lua',
-    'client/blips.lua',
-    'client/markers.lua',
-    'client/peds.lua',
-    'client/overlay.lua',
-    'client/events.lua',
-    'client/main.lua'
+    'client/*.lua',
 }
 
 files {
-    'html/index.html',
-    'html/script.js',
-    'html/style.css',
+    'html/*.*'
 }
 
 dependencies {
