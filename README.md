@@ -61,8 +61,7 @@ AirportRoute = { -- The name of the route (what you add to Config.Routes)
     Lines = {...} -- A list of all the stops
 }
 ```
-2. Add that file to `__resource.lua`, where the other routes are
-3. Update Config.Routes in `config/config.lua` to reference the new route that you added
+2. Update Config.Routes in `config/config.lua` to reference the new route that you added
 
 #### Lines
 ##### Multiple lines
