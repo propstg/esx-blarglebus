@@ -11,6 +11,7 @@ shared_scripts {
 
 server_scripts {
     'config/config.lua',
+    'lib/wrapper.lua',
     'server/main.lua'
 }
 
