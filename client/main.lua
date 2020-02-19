@@ -100,7 +100,8 @@ end
 function startPedCleanupThread()
     Citizen.CreateThread(function()
         while true do
-            if #pedsToDelete > 0 and (not isOnDuty or playerDistanceFromCoords(lastStopCoords) > Config.DeleteDistance) then
+            if #pedsToDelete > 0 and (not isOnDuty or playerDistanceFromCoords(lastStopCoords)
+                > Config.DeleteDistance) then
                 Peds.DeletePeds(pedsToDelete)
             end
 
@@ -136,7 +137,7 @@ end
 function handleSpawnPoint(locationIndex)
     local route = Config.Routes[locationIndex]
     local coords = route.SpawnPoint;
-    
+
     if playerDistanceFromCoords(coords) < Config.Markers.Size then
         ESX.ShowHelpNotification(_U('start_route', _(route.Name)))
 
@@ -188,18 +189,18 @@ function handleMultiLineRouteSelection(selectedRoute)
 
     ESX.UI.Menu.Open('default', GetCurrentResourceName(), 'line_selector', {
         title = _U('route_selection_title', _U(selectedRoute.Name)),
-        align = 'top-left', 
+        align = 'top-left',
         elements = buildStartingLineMenuElements(selectedRoute)
     }, function (data, menu)
         menu.close()
         selectedIndex = data.current.value
-    end, function (data, menu)
+    end, function (_, menu)
         menu.close()
         selectedIndex = -1
     end)
 
     while selectedIndex == nil do
-       Citizen.Wait(1) 
+       Citizen.Wait(1)
     end
 
     if selectedIndex == -1 then
@@ -304,7 +305,7 @@ function determineNextStopName()
 end
 
 function getReturnPointCoords(route, line)
-    return line.BusReturnPointOverride or activeRoute.BusReturnPoint or activeRoute.SpawnPoint
+    return line.BusReturnPointOverride or route.BusReturnPoint or route.SpawnPoint
 end
 
 function handleUnloading(stopCoords)
@@ -376,7 +377,7 @@ end
 function waitUntilPedsOnBus()
     local stop = activeRouteLine.Stops[stopNumber]
 
-    if #pedsAtNextStop == 0 then 
+    if #pedsAtNextStop == 0 then
         return
     end
 
@@ -405,7 +406,7 @@ function setUpNextStop()
     local nextStop = activeRouteLine.Stops[stopNumber + 1]
     local numberOfPedsToSpawn = 0
     local freeSeats = busType.Capacity - #pedsOnBus
-    
+
     pedsAtNextStop = {}
 
     if isLastStop(stopNumber + 1) then
@@ -424,12 +425,12 @@ function setUpNextStop()
             Citizen.Wait(100)
         end
     end)
-    
+
     Markers.SetMarkers({nextStop})
     Blips.SetBlipAndWaypoint(activeRoute.Name, nextStop.x, nextStop.y, nextStop.z)
 end
 
-function isLastStop(stopNumber)
+function isLastStop()
     return stopNumber == #activeRouteLine.Stops
 end
 
@@ -453,7 +454,8 @@ function setUpSomeStop(freeSeats)
 
     local numberDeparting = math.random(minimumDepartingPeds, #pedsOnBus)
 
-    Log.debug('next stop is Some, randomly decided to spawn ' .. numberOfPedsToSpawn .. ' peds and depart ' .. numberDeparting)
+    Log.debug('next stop is Some, randomly decided to spawn ' .. numberOfPedsToSpawn ..
+        ' peds and depart ' .. numberDeparting)
     return numberOfPedsToSpawn, numberDeparting
 end
 

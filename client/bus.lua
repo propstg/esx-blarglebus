@@ -33,7 +33,8 @@ function Bus.DoFillForLegacyFuel()
     if not wasCallSuccessful then
         Log.debug('Error calling exports['..Config.LegacyFuelFolderName..']:SetFuel.')
         Log.debug('Error was: ' .. err)
-        Log.debug('If you have an older version of LegacyFuel, or if your bus is spawning with full fuel, this is probably safe to ignore.')
+        Log.debug('If you have an older version of LegacyFuel, or if your bus is spawning with full fuel, ')
+		Log.debug('this is probably safe to ignore.')
         Log.debug('You may want to update LegacyFuel or check that Config.LegacyFuelFolderName is correct.')
         Log.debug('Attempting to set fuel using old style...')
         Bus.DoFillForLegacyFuelOldStyle()
@@ -56,7 +57,7 @@ function Bus.DoFillForFrFuel()
 
         while true do
             Citizen.Wait(500)
-            
+
             if GetVehiclePedIsIn(PlayerPedId(), false) == Bus.bus then
                 exports.frfuel:setFuel(maxFuel)
                 break

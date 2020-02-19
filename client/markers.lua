@@ -8,7 +8,7 @@ function Markers.StartMarkers()
     Citizen.CreateThread(function ()
         while true do
             Citizen.Wait(10)
-    
+
             for _, markerPosition in pairs(Markers.markerPositions) do
                 Markers.DrawMarker(markerPosition, Config.Markers.StartColor)
             end

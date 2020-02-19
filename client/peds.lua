@@ -24,7 +24,7 @@ function Peds.LeaveVehicle(ped, vehicle)
 end
 
 function Peds.WanderInArea(ped, stopCoords)
-    TaskWanderInArea(ped, 
+    TaskWanderInArea(ped,
         stopCoords.x,
         stopCoords.y,
         stopCoords.z,
@@ -36,8 +36,8 @@ end
 
 function Peds.EnterVehicle(ped, vehicle, seatNumber)
     Citizen.Wait(10)
-    TaskEnterVehicle(ped, 
-        vehicle, 
+    TaskEnterVehicle(ped,
+        vehicle,
         Config.EnterVehicleTimeout, -- timeout
         seatNumber,                 -- seat
         1.0,                        -- speed (walk)
@@ -46,7 +46,7 @@ function Peds.EnterVehicle(ped, vehicle, seatNumber)
     )
 end
 
-function Peds.IsPedInVehicleOrDead(ped, position)
+function Peds.IsPedInVehicleOrDead(ped)
     return GetVehiclePedIsIn(ped, false) or IsPedDeadOrDying(ped, 1)
 end
 

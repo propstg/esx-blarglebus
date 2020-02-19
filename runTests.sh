@@ -15,7 +15,7 @@ busted --coverage test/ || abort "unit tests failed"
 printf '\n==============================================================================\n'
 printf 'Luacheck'
 printf '\n==============================================================================\n'
-luacheck lib server || abort "linting failed"
+luacheck client lib server || abort "linting failed"
 
 luacov server/
 printf '\n==============================================================================\n'

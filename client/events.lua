@@ -1,3 +1,5 @@
+--luacheck: no unused args
+
 -- These are stubs that get called on certain events.
 -- You can use them to run custom code, like triggering events in other resources.
 -- Don't delete the function, if you don't need it. Just leave it empty.

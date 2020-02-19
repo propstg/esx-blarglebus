@@ -22,7 +22,7 @@ function Blips.StopBlips()
     for _, blip in pairs(Blips.routeBlips) do
         RemoveBlip(blip)
     end
-    
+
     Blips.StopAbortBlip()
 end
 
