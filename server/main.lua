@@ -1,7 +1,7 @@
 ESX = nil
 
-Wrapper.TriggerEvent('esx:getSharedObject', setEsx)
 function setEsx(obj) ESX = obj end
+Wrapper.TriggerEvent('esx:getSharedObject', setEsx)
 
 Wrapper.RegisterNetEvent('blarglebus:finishRoute')
 Wrapper.AddEventHandler('blarglebus:finishRoute', function(amount)
