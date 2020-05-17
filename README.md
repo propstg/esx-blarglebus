@@ -1,5 +1,11 @@
 # esx-blarglebus
-Adds a bus driver job to drive NPCs around, with a few default routes. Airport shuttle route starts near the airport. LS metro starts at the Strawberry station under the highway. Scenic route starts at the Dashound Bus Center in Los Santos.
+Adds a bus driver job to drive NPCs around, with a few default routes.
+* Airport shuttle route starts near the airport.
+* LS metro starts at the Strawberry station under the highway.
+* Scenic route starts at the Dashound Bus Center in Los Santos.
+
+### Probably does not work with onesync, in a crash-your-clients sort of way.
+Any help welcome, as I have not been able to recreate the error.
 
 ## Download & Installation
 
