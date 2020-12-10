@@ -4,7 +4,7 @@ Config.DebugLog = false
 
 -- SpawnPeds. Set to false if you don't want any peds to spawn.
 -- When set to false, MoneyPerStopNoPedsOverride will be awarded to the player, instead of passengers * PaymentPerPassenger, for each stop.
-Config.SpawnPeds = false
+Config.SpawnPeds = true
 Config.MoneyPerStopNoPedsOverride = 100
 
 -- Fuel options: These just set the initial fuel to 100%, if you're using the associated fuel script. Be sure to set any others to false.
