@@ -393,8 +393,15 @@ function waitUntilPedsOnBus()
 end
 
 function payForEachPedLoaded(numberOfPeds)
-    if numberOfPeds > 0 then
-        local amountToPay = numberOfPeds * activeRoute.PaymentPerPassenger
+    local amountToPay = 0
+
+    if Config.SpawnPeds == false then
+        amountToPay = Config.MoneyPerStopNoPedsOverride
+    elseif numberOfPeds > 0 then
+        amountToPay = numberOfPeds * activeRoute.PaymentPerPassenger
+    end
+
+    if amountToPay > 0 then
         TriggerServerEvent('blarglebus:passengersLoaded', amountToPay)
         ESX.ShowNotification(_U('passengers_loaded', numberOfPeds, amountToPay))
         totalMoneyPaidThisRoute = totalMoneyPaidThisRoute + amountToPay
@@ -408,7 +415,9 @@ function setUpNextStop()
     
     pedsAtNextStop = {}
 
-    if isLastStop(stopNumber + 1) then
+    if Config.SpawnPeds == false then
+        numberDepartingPedsNextStop = 0
+    elseif isLastStop(stopNumber + 1) then
         numberOfPedsToSpawn, numberDepartingPedsNextStop = setUpLastStop()
     elseif nextStop.unloadType == UnloadType.All then
         numberOfPedsToSpawn, numberDepartingPedsNextStop = setUpAllStop()
