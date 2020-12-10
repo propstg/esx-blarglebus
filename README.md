@@ -1,5 +1,11 @@
 # esx-blarglebus
-Adds a bus driver job to drive NPCs around, with a few default routes. Airport shuttle route starts near the airport. LS metro starts at the Strawberry station under the highway. Scenic route starts at the Dashound Bus Center in Los Santos.
+Adds a bus driver job to drive NPCs around, with a few default routes.
+* Airport shuttle route starts near the airport.
+* LS metro starts at the Strawberry station under the highway.
+* Scenic route starts at the Dashound Bus Center in Los Santos.
+
+### Probably does not work with onesync, in a crash-your-clients sort of way.
+Any help welcome, as I have not been able to recreate the error.
 
 ## Download & Installation
 
@@ -38,9 +44,11 @@ Custom vehicles can be added by editing config/busType.lua and adding a bus obje
     },
 ```
 
+:warning: **IMPORTANT**: `Doors` _must_ be updated to reflect the doors on the bus. If the game tries to open a door that doesn't exist on the model you are using, there is a good chance it will cause your player's game to crash. Possibly with an error message like `florida-fanta-snake`. See #3, below.
+
 1. Set BusModel to the name of the vehicle (use the name that you would use to spawn it).
 2. Set the Capacity to the number of actual passenger seats (some buses have less seats than they appear to have). This controls how many peds will spawn. If it's too high, some peds will be left standing around after the others get on the bus.
-3. Set this to the door numbers that you want opened automatically when the bus arrives at a stop. This may cause an issue if the list of doors references a door number that the vehicle model doesn't have.
+3. Set this to the door numbers that you want opened automatically when the bus arrives at a stop. This may cause an issue if the list of doors references a door number that the vehicle model doesn't have. An empty table (`{}`) is acceptable, if you don't want to be bothered figuring out the doors and are okay with the NPCs opening them by themselves.
 4. Set first seat to the first passenger seat number. (This probably isn't really needed, but I don't remember why I added it. Leave it set to 1, probably.)
 5. Update the appropriate route config file to reference this new bus type (set Bus = BusType.YourNewBusType)
 
