@@ -11,7 +11,7 @@ BusType = {
         Doors = {2, 3},
         FirstSeat = 1
     },
-	Scenic = {
+    Scenic = {
         BusModel = 'coach',
         Capacity = 9,
         Doors = {0},
