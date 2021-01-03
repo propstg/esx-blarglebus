@@ -1,6 +1,6 @@
 ScenicRoute = {
     Name = 'scenic_route',
-    Bus = BusType.CityBus,
+    Bus = BusType.Scenic,
     SpawnPoint = {x = 427.6807, y = -582.7913, z = 28.5165, heading = 135.64},
     BusReturnPoint = {x = 427.6807, y = -582.7913, z = 28.5165, heading = 135.64},
     Payment = 15000,
