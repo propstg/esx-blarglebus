@@ -96,7 +96,7 @@ end
 
 function Peds.WalkPedsToLocation(peds, coords)
     for i = 1, #peds do
-        TaskGoToCoordAnyMeans(peds[i], coords.x, coords.y, coords.z, 1.0, 0, 0, 786603, 0.0);
+        TaskWanderStandard(peds[i])
     end
 end
 
